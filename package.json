@@ -1,0 +1,25 @@
+{
+  "name": "autoflash",
+  "version": "2017.05.20-1",
+  "description": "Autoflasher for E3372",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "install": "electron-rebuild",
+    "build": "electron-rebuild --arch=ia32 && electron-packager ./ autoflash --platform=win32 --arch=ia32 --icon=../autoflash.ico --out=../ && electron-rebuild"
+  },
+  "repository": "https://github.com/ilya-fedin/autoflash",
+  "author": "ilya-fedin",
+  "devDependencies": {
+    "electron": "~1.6.2",
+    "electron-packager": "^8.7.0",
+    "electron-rebuild": "^1.5.11"
+  },
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "iconv-lite": "^0.4.17",
+    "jQuery": "^1.7.4",
+    "node-wmi": "0.0.4",
+    "serialport": "^5.0.0-beta3"
+  }
+}
