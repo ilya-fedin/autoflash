@@ -6,7 +6,8 @@ var {ipcRenderer} = require('electron');
 var remote = require('electron').remote;
 var os = require('os');
 var fs = require('fs');
-var spawnSync = require('child_process').spawnSync;
+var exec = require('child_process').exec;
+var spawn = require('child_process').spawn;
 var path = require('path');
 var iconv = require('iconv-lite');
 var SerialPort = require('serialport');
@@ -14,25 +15,14 @@ var wmi = require('node-wmi');
 var $ = require('jQuery');
 require('bootstrap');
 
-function _ajaxReadFileSync(src) {
-	var content = '';
-	$.ajax({
-		url: src,
-		dataType: 'text',
-		success: function(data, textStatus, jqXHR) {
-			content = data;
-		},
-		async: false
-	})
-	return content;
-}
-
-function _addScript(src) {
+function _addScript(src, callback) {
 	$.ajax({
 		url: src,
 		dataType: 'script',
-		async: false
-	})
+		success: function() {
+			if(typeof(callback) == 'function') callback();
+		}
+	});
 }
 
 function _addZero(i) {
@@ -41,10 +31,10 @@ function _addZero(i) {
 
 function _updateLog(level, data) {
 	if(level) 
-		logbuffer += '[' + level + '] ' + data + '\n';
+		logbuffer += '[' + level + '] ' + data + '\r\n';
 	else
-		logbuffer += data + '\n';
-	fs.writeFileSync(logfile, logbuffer);
+		logbuffer += data + '\r\n';
+	fs.writeFile(logfile, logbuffer);
 }
 
 function error_handler(func, args, callback) {
@@ -69,7 +59,7 @@ function error_handler(func, args, callback) {
 						break;
 					case 'e':
 					case 'E':
-						ipcRenderer.sendSync('quit');
+						ipcRenderer.send('quit');
 						break;
 					case 'a':
 					case 'A':
@@ -86,26 +76,30 @@ function error_handler(func, args, callback) {
 }
 
 function _detectSuccess(callback) {
-	model = /.*:\"(.*)\"/.exec($.grep(spawnSync('atscr', [port, 'AT^HWVER']).stdout.toString().split('\n'), function(elem, idx) {
-		if(!/AT/.test(elem) && /HWVER/.test(elem))
-			return true;
-		else
-			return false;
-	})[0]);
-	if(model) model = model[1];
-	else {
-		model = /product name:(.*)/.exec($.grep(spawnSync('atscr', [port, 'AT^DLOADINFO?']).stdout.toString().split('\n'), function(elem, idx) {
-		return /product name/.test(elem);
-	})[0]);
+	exec('atscr ' + port + ' "AT^HWVER"', function(error, stdout, stderr) {
+		model = /.*:\"(.*)\"/.exec($.grep(stdout.split('\n'), function(elem, idx) {
+			if(!/AT/.test(elem) && /HWVER/.test(elem))
+				return true;
+			else
+				return false;
+		})[0]);
 		if(model) model = model[1];
-		else model = '';
-	}
-	version = /swver:(.*)/.exec($.grep(spawnSync('atscr', [port, 'AT^DLOADINFO?']).stdout.toString().split('\n'), function(elem, idx) {
-		return /swver/.test(elem);
-	})[0]);
-	if(version) version = version[1];
-	else version = '';
-	if(typeof(callback) == 'function') callback();
+		exec('atscr ' + port + ' "AT^DLOADINFO?"', function(error, stdout, stderr) {
+			if(!model) {
+				model = /product name:(.*)/.exec($.grep(stdout.split('\n'), function(elem, idx) {
+					return /product name/.test(elem);
+				})[0]);
+				if(model) model = model[1];
+				else model = '';
+			}
+			version = /swver:(.*)/.exec($.grep(stdout.split('\n'), function(elem, idx) {
+				return /swver/.test(elem);
+			})[0]);
+			if(version) version = version[1];
+			else version = '';
+			if(typeof(callback) == 'function') callback();
+		});
+	});
 }
 
 // function _detectSuccess(callback) {
@@ -204,12 +198,12 @@ function detect(callback) {
 								else hilink_ip = '';
 								if(hilink_ip) {
 									$('body > div.container').append('<p>' + DIALOG_TRY_OPEN_PORT + '</p>');
-									$.ajax({
-										type: "POST",
-										url: 'http://' + hilink_ip + '/CGI',
-										data: _ajaxReadFileSync('sw_project_mode.xml'),
-										dataType: "xml",
-										async: false
+									fs.readFile('sw_project_mode.xml', function(err,data) {
+										$.ajax({
+											type: "POST",
+											url: 'http://' + hilink_ip + '/CGI',
+											data: data.toString()
+										});
 									});
 								}
 							});
@@ -233,7 +227,7 @@ function detect(callback) {
 							}
 							else {
 								port_number = '';
-								setTimeout(whileFunc, 1000, callback);
+								setTimeout(whileFunc, 0, callback);
 							}
 						}); 
 					});
@@ -287,24 +281,26 @@ function detect_flash(callback) {
 						else flash_port = '';
 						if(flash_port) flash_port = flash_port[1];
 						if(flash_port) {
-							if(spawnSync('atscr', [flash_port, 'AT^DLOADINFO?']).stdout.toString().indexOf('dload type:1') != -1) {
-								flash_port_number = /COM(\d*)/.exec(flash_port);
-								if(flash_port_number) flash_port_number = flash_port_number[1];
-								else flash_port_number = '';
-								_updateLog('info', 'Download port: ' + flash_port);
-								$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
-								$('body > div.container').append('<br>');
-								_updateLog('success', 'detect_flash');
-								if(typeof(callback) == 'function') callback();
-							}
-							else {
-								flash_port_number = '';
-								setTimeout(whileFunc, 1000, callback);
-							}
+							exec('atscr ' + flash_port + ' "AT^DLOADINFO?"', function(error, stdout, stderr) {
+								if(stdout.indexOf('dload type:1') != -1) {
+									flash_port_number = /COM(\d*)/.exec(flash_port);
+									if(flash_port_number) flash_port_number = flash_port_number[1];
+									else flash_port_number = '';
+									_updateLog('info', 'Download port: ' + flash_port);
+									$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
+									$('body > div.container').append('<br>');
+									_updateLog('success', 'detect_flash');
+									if(typeof(callback) == 'function') callback();
+								}
+								else {
+									flash_port_number = '';
+									setTimeout(whileFunc, 0, callback);
+								}
+							});
 						}
 						else {
 							flash_port_number = '';
-							setTimeout(whileFunc, 1000, callback);
+							setTimeout(whileFunc, 0, callback);
 						}
 					}); 
 				})(callback);
@@ -371,7 +367,7 @@ function detect_dload(callback) {
 							}
 							else {
 								dload_port_number = '';
-								setTimeout(whileFunc, 1000, callback);
+								setTimeout(whileFunc, 0, callback);
 							}
 						}); 
 					})(callback);
@@ -385,16 +381,17 @@ function factory(callback) {
 	_updateLog('start', 'factory');
 	detect(function() {
 		$('body > div.container').append('<p>' + DIALOG_FACTORY + '</p>');
-		var factory = spawnSync('atscr', [port, 'AT^SFM=1']).stdout.toString();
-		if(factory.indexOf('OK') != -1) {
-			$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
-			$('body > div.container').append('<br>');
-		} else {
-			error_handler(factory, null, callback);
-			return false;
-		}
-		_updateLog('success', 'factory');
-		if(typeof(callback) == 'function') callback();
+		exec('atscr ' + port + ' "AT^SFM=1"', function(error,stdout, stderr) {
+			if(stdout.indexOf('OK') != -1) {
+				$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
+				$('body > div.container').append('<br>');
+			} else {
+				error_handler(factory, null, callback);
+				return false;
+			}
+			_updateLog('success', 'factory');
+			if(typeof(callback) == 'function') callback();
+		});
 	});
 }
 
@@ -402,45 +399,59 @@ function godload(callback) {
 	_updateLog('start', 'godload');
 	detect(function() {
 		$('body > div.container').append('<p>' + DIALOG_GODLOAD + '</p>');
-		var godload = spawnSync('atscr', [port, 'AT^GODLOAD']).stdout.toString();
-		if(godload.indexOf('OK') != -1) {
-			$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
-			$('body > div.container').append('<br>');
-		} else {
-			error_handler(godload, null, callback);
-			return false;
-		}
-		_updateLog('success', 'godload');
-		if(typeof(callback) == 'function') callback();
+		exec('atscr ' + port + ' "AT^GODLOAD"', function(error, stdout, stderr) {
+			if(stdout.indexOf('OK') != -1) {
+				$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
+				$('body > div.container').append('<br>');
+			} else {
+				error_handler(godload, null, callback);
+				return false;
+			}
+			_updateLog('success', 'godload');
+			if(typeof(callback) == 'function') callback();
+		});
 	});
 }
 
 function _dload(dload_model, callback) {
 	$('body > div.container').append('<p>' + DIALOG_DLOAD + '</p>');
 	if(dload_model == 'e3372h') {
-		var balong_usbdload = spawnSync('balong_usbdload', ['-p' + dload_port_number, '-t', 'ptable-hilink.bin', 'usblsafe-3372h.bin']);
-		$('body > div.container').append('<pre>' + iconv.decode(balong_usbdload.stdout, 'cp866') + '</pre>');
-		if(balong_usbdload.status == 0) {
-			$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
-			$('body > div.container').append('<br>');
-			_updateLog('success', 'dload ' + dload_model + '');
-		} else {
-			error_handler(dload, [dload_model, callback], callback);
-			return false;
-		}
+		var balong_usbdload = spawn('balong_usbdload', ['-p' + dload_port_number, '-t', 'ptable-hilink.bin', 'usblsafe-3372h.bin']);
+		var balong_usbdload_html = document.createElement('pre');
+		document.querySelector('body > div.container').appendChild(balong_usbdload_html);
+		balong_usbdload.stdout.on('data', function(data) {
+			$(balong_usbdload_html).append(iconv.decode(data, 'cp866'));
+		});
+		balong_usbdload.on('close', function(code) {
+			if(code == 0) {
+				$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
+				$('body > div.container').append('<br>');
+				_updateLog('success', 'dload ' + dload_model + '');
+			} else {
+				error_handler(dload, [dload_model, callback], callback);
+				return false;
+			}
+			if(typeof(callback) == 'function') callback();
+		});
 	} else if(dload_model == 'e3372s') {
-		var balong_usbdload = spawnSync('balong_usbdload', ['-p' + dload_port_number, 'usblsafe-3372s.bin']);
-		$('body > div.container').append('<pre>' + iconv.decode(balong_usbdload.stdout, 'cp866') + '</pre>');
-		if(balong_usbdload.status == 0) {
-			$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
-			$('body > div.container').append('<br>');
-			_updateLog('success', 'dload ' + dload_model + '');
-		} else {
-			error_handler(dload, [dload_model, callback], callback);
-			return false;
-		}
+		var balong_usbdload = spawn('balong_usbdload', ['-p' + dload_port_number, 'usblsafe-3372s.bin']);
+		var balong_usbdload_html = document.createElement('pre');
+		document.querySelector('body > div.container').appendChild(balong_usbdload_html);
+		balong_usbdload.stdout.on('data', function(data) {
+			$(balong_usbdload_html).append(iconv.decode(data, 'cp866'));
+		});
+		balong_usbdload.on('close', function(code) {
+			if(code == 0) {
+				$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
+				$('body > div.container').append('<br>');
+				_updateLog('success', 'dload ' + dload_model + '');
+			} else {
+				error_handler(dload, [dload_model, callback], callback);
+				return false;
+			}
+			if(typeof(callback) == 'function') callback();
+		});
 	}
-	if(typeof(callback) == 'function') callback();
 }
 
 function dload(dload_model, callback) {
@@ -453,18 +464,24 @@ function dload(dload_model, callback) {
 function _flash_technological(flash_model, flash_special, callback) {
 	$('body > div.container').append('<p>' + DIALOG_FLASH_TECHNOLOGICAL + '</p>');
 	if(flash_model == 'e3372s') {
-		var balong_flash = spawnSync('balong_flash', ['-p' + flash_port_number, '-g1', 'technological_e3372s.bin']);
-		$('body > div.container').append('<pre>' + iconv.decode(balong_flash.stdout, 'cp866') + '</pre>');
-		if(balong_flash.status == 0) {
-			$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
-			$('body > div.container').append('<br>');
-			_updateLog('success', 'flash_technological ' + flash_model + ' ' + flash_special);
-		} else {
-			error_handler(flash_technological, [flash_model, flash_special, callback], callback);
-			return false;
-		}
+		var balong_flash = spawn('balong_flash', ['-p' + flash_port_number, '-g1', 'technological_e3372s.bin']);
+		var balong_flash_html = document.createElement('pre');
+		document.querySelector('body > div.container').appendChild(balong_flash_html);
+		balong_flash.stdout.on('data', function(data) {
+			$(balong_flash_html).append(iconv.decode(data, 'cp866'));
+		});
+		balong_flash.on('close', function(code) {
+			if(code == 0) {
+				$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
+				$('body > div.container').append('<br>');
+				_updateLog('success', 'flash_technological ' + flash_model + ' ' + flash_special);
+			} else {
+				error_handler(flash_technological, [flash_model, flash_special, callback], callback);
+				return false;
+			}
+			if(typeof(callback) == 'function') callback();
+		});
 	}
-	if(typeof(callback) == 'function') callback();
 }
 
 function flash_technological(flash_model, flash_special, callback) {
@@ -492,18 +509,24 @@ function flash_technological(flash_model, flash_special, callback) {
 function _flash_health(flash_model, flash_special, callback) {
 	$('body > div.container').append('<p>' + DIALOG_FLASH_HEALTH + '</p>');
 	if(flash_model == 'e3372s') {
-		var balong_flash = spawnSync('balong_flash', ['-p' + flash_port_number, 'health_e3372s.bin']);
-		$('body > div.container').append('<pre>' + iconv.decode(balong_flash.stdout, 'cp866') + '</pre>');
-		if(balong_flash.status == 0) {
-			$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
-			$('body > div.container').append('<br>');
-			_updateLog('success', 'flash_health ' + flash_model + ' ' + flash_special);
-		} else {
-			error_handler(flash_health, [flash_model, flash_special, callback], callback);
-			return false;
-		}
+		var balong_flash = spawn('balong_flash', ['-p' + flash_port_number, 'health_e3372s.bin']);
+		var balong_flash_html = document.createElement('pre');
+		document.querySelector('body > div.container').appendChild(balong_flash_html);
+		balong_flash.stdout.on('data', function(data) {
+			$(balong_flash_html).append(iconv.decode(data, 'cp866'));
+		});
+		balong_flash.on('close', function(code) {
+			if(data == 0) {
+				$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
+				$('body > div.container').append('<br>');
+				_updateLog('success', 'flash_health ' + flash_model + ' ' + flash_special);
+			} else {
+				error_handler(flash_health, [flash_model, flash_special, callback], callback);
+				return false;
+			}
+			if(typeof(callback) == 'function') callback();
+		});
 	}
-	if(typeof(callback) == 'function') callback();
 }
 
 function flash_health(flash_model, flash_special, callback) {
@@ -531,29 +554,42 @@ function flash_health(flash_model, flash_special, callback) {
 function _flash_firmware(flash_model, flash_special, callback) {
 	$('body > div.container').append('<p>' + DIALOG_FLASH_FIRMWARE + '</p>');
 	if(flash_model == 'e3372h') {
-		var balong_flash = spawnSync('balong_flash', ['-p' + flash_port_number, '-g0', 'firmware_e3372h.bin']);
-		$('body > div.container').append('<pre>' + iconv.decode(balong_flash.stdout, 'cp866') + '</pre>');
-		if(balong_flash.status == 0) {
-			$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
-			$('body > div.container').append('<br>');
-			_updateLog('success', 'flash_firmware ' + flash_model + ' ' + flash_special);
-		} else {
-			error_handler(flash_firmware, [flash_model, flash_special, callback], callback);
-			return false;
-		}
+		var balong_flash = spawn('balong_flash', ['-p' + flash_port_number, '-g0', 'firmware_e3372h.bin']);
+		var balong_flash_html = document.createElement('pre');
+		document.querySelector('body > div.container').appendChild(balong_flash_html);
+		balong_flash.stdout.on('data', function(data) {
+			$(balong_flash_html).append(iconv.decode(data, 'cp866'));
+		});
+		balong_flash.on('close', function(code) {
+			if(code == 0) {
+				$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
+				$('body > div.container').append('<br>');
+				_updateLog('success', 'flash_firmware ' + flash_model + ' ' + flash_special);
+			} else {
+				error_handler(flash_firmware, [flash_model, flash_special, callback], callback);
+				return false;
+			}
+			if(typeof(callback) == 'function') callback();
+		});
 	} else if(flash_model == 'e3372s') {
-		var balong_flash = spawnSync('balong_flash', ['-p' + flash_port_number, 'firmware_e3372s.bin']);
-		$('body > div.container').append('<pre>' + iconv.decode(balong_flash.stdout, 'cp866') + '</pre>');
-		if(balong_flash.status == 0) {
-			$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
-			$('body > div.container').append('<br>');
-			_updateLog('success', 'flash_firmware ' + flash_model + ' ' + flash_special);
-		} else {
-			error_handler(flash_firmware, [flash_model, flash_special, callback], callback);
-			return false;
-		}
+		var balong_flash = spawn('balong_flash', ['-p' + flash_port_number, 'firmware_e3372s.bin']);
+		var balong_flash_html = document.createElement('pre');
+		document.querySelector('body > div.container').appendChild(balong_flash_html);
+		balong_flash.stdout.on('data', function(data) {
+			$(balong_flash_html).append(iconv.decode(data, 'cp866'));
+		});
+		balong_flash.on('close', function(code) {
+			if(code == 0) {
+				$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
+				$('body > div.container').append('<br>');
+				_updateLog('success', 'flash_firmware ' + flash_model + ' ' + flash_special);
+			} else {
+				error_handler(flash_firmware, [flash_model, flash_special, callback], callback);
+				return false;
+			}
+			if(typeof(callback) == 'function') callback();
+		});
 	}
-	if(typeof(callback) == 'function') callback();
 }
 
 function flash_firmware(flash_model, flash_special, callback) {
@@ -581,29 +617,42 @@ function flash_firmware(flash_model, flash_special, callback) {
 function _flash_webui(flash_model, flash_special, callback) {
 	$('body > div.container').append('<p>' + DIALOG_FLASH_WEBUI + '</p>');
 	if(flash_model == 'e3372h') {
-		var balong_flash = spawnSync('balong_flash', ['-p' + flash_port_number, '-g3', 'webui.bin']);
-		$('body > div.container').append('<pre>' + iconv.decode(balong_flash.stdout, 'cp866') + '</pre>');
-		if(balong_flash.status == 0) {
-			$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
-			$('body > div.container').append('<br>');
-			_updateLog('success', 'flash_webui ' + flash_model + ' ' + flash_special);
-		} else {
-			error_handler(flash_webui, [flash_model, flash_special, callback], callback);
-			return false;
-		}
+		var balong_flash = spawn('balong_flash', ['-p' + flash_port_number, '-g3', 'webui.bin']);
+		var balong_flash_html = document.createElement('pre');
+		document.querySelector('body > div.container').appendChild(balong_flash_html);
+		balong_flash.stdout.on('data', function(data) {
+			$(balong_flash_html).append(iconv.decode(data, 'cp866'));
+		});
+		balong_flash.on('close', function(code) {
+			if(code == 0) {
+				$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
+				$('body > div.container').append('<br>');
+				_updateLog('success', 'flash_webui ' + flash_model + ' ' + flash_special);
+			} else {
+				error_handler(flash_webui, [flash_model, flash_special, callback], callback);
+				return false;
+			}
+			if(typeof(callback) == 'function') callback();
+		});
 	} else if(flash_model == 'e3372s') {
-		var balong_flash = spawnSync('balong_flash', ['-p' + flash_port_number, 'webui.bin']);
-		$('body > div.container').append('<pre>' + iconv.decode(balong_flash.stdout, 'cp866') + '</pre>');
-		if(balong_flash.status == 0) {
-			$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
-			$('body > div.container').append('<br>');
-			_updateLog('success', 'flash_webui ' + flash_model + ' ' + flash_special);
-		} else {
-			error_handler(flash_webui, [flash_model, flash_special, callback], callback);
-			return false;
-		}
+		var balong_flash = spawn('balong_flash', ['-p' + flash_port_number, 'webui.bin']);
+		var balong_flash_html = document.createElement('pre');
+		document.querySelector('body > div.container').appendChild(balong_flash_html);
+		balong_flash.stdout.on('data', function(data) {
+			$(balong_flash_html).append(iconv.decode(data, 'cp866'));
+		});
+		balong_flash.on('close', function(code) {
+			if(code == 0) {
+				$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
+				$('body > div.container').append('<br>');
+				_updateLog('success', 'flash_webui ' + flash_model + ' ' + flash_special);
+			} else {
+				error_handler(flash_webui, [flash_model, flash_special, callback], callback);
+				return false;
+			}
+			if(typeof(callback) == 'function') callback();
+		});
 	}
-	if(typeof(callback) == 'function') callback();
 }
 
 function flash_webui(flash_model, flash_special, callback) {
@@ -695,9 +744,10 @@ function codes() {
 }
 
 function functions() {
-	var file = _ajaxReadFileSync('functions.' + LANG + '.txt');
-	$('body > div.container').append('<pre>' + file + '</pre>');
-	$('body > div.container').append('<br>');
+	fs.readFile('functions.' + LANG + '.txt', function(err, data) {
+		$('body > div.container').append('<pre style="height: ' + ($(window).height() - 40) + 'px;">' + data + '</pre>');
+		$('body > div.container').append('<br>');
+	});
 }
 
 function shell() {
@@ -799,23 +849,19 @@ function start() {
 	});
 }
 
-function main() {
-	document.title = DIALOG_TITLE;
-
-	var now = new Date();
-	
-	logfile = os.homedir() + '/autoflash/autoflash.' + String(now.getFullYear()) + String(_addZero(now.getMonth()+1)) + String(_addZero(now.getDate())) + '-' + String(_addZero(now.getHours())) + String(_addZero(now.getMinutes()) + String(_addZero(now.getSeconds()))) + '.log'
-
-	if(!fs.existsSync(path.dirname(logfile))) fs.mkdirSync(path.dirname(logfile));
-
+function _main() {
 	logbuffer = '';
 
-	_updateLog(null, '************************************************************');
-	_updateLog(null, 'autoflash - ' + now.toString());
-	_updateLog(null, '************************************************************');
+	var logTitle = 'autoflash - ' + now.toString();
+
+	_updateLog(null, new Array(logTitle.length + 1).join('*'));
+	_updateLog(null, logTitle);
+	_updateLog(null, new Array(logTitle.length + 1).join('*'));
 	_updateLog(null, '');
 
 	skip_all = false;
+
+	document.title = DIALOG_TITLE;
 
 	if(!agr_mode) {
 		document.querySelector('body > div.container').innerHTML = '<center><h3>' + DIALOG_HELLO + '</h3></center> \
@@ -853,6 +899,17 @@ function main() {
 	}
 }
 
+function main() {
+	now = new Date();
+
+	logfile = os.homedir() + '/autoflash/autoflash.' + String(now.getFullYear()) + String(_addZero(now.getMonth()+1)) + String(_addZero(now.getDate())) + '-' + String(_addZero(now.getHours())) + String(_addZero(now.getMinutes()) + String(_addZero(now.getSeconds()))) + '.log'
+
+	fs.access(path.dirname(logfile), fs.constants.R_OK | fs.constants.W_OK, function(err) {
+		if(err) fs.mkdir(path.dirname(logfile), _main);
+		else _main();
+	});
+}
+
 process.chdir(__dirname);
 
 if(path.basename(remote.process.argv[0]) == 'autoflash.exe') {
@@ -869,11 +926,12 @@ if(path.basename(remote.process.argv[0]) == 'autoflash.exe') {
 	agr_dload_port = remote.process.argv[6];
 }
 
-new MutationObserver(function(mutations) {
-	mutations.forEach(function(mutation) {
-		$(document.body).scrollTop($(document.body).get(0).scrollHeight);
-	});    
-}).observe(document.querySelector('body > div.container'), {attributes: true, childList: true, characterData: true});
+setTimeout(function() {
+	(function whileFunc() {
+		$(document.body).scrollTop(document.body.scrollHeight);
+		setTimeout(whileFunc, 0);
+	})();
+}, 0);
 
 $(document.body).on('keydown', function(e) {
 	if (e.ctrlKey && (e.which == '1'.charCodeAt() || e.which == 13)) {
@@ -898,8 +956,7 @@ wmi.Query({
 	class: 'Win32_OperatingSystem'
 }, function(err, result) {
 	switch(result[0].Locale) {
-		case '0419': _addScript('lang.ru.js'); break;
-		default: _addScript('lang.en.js'); break;
+		case '0419': _addScript('lang.ru.js', main); break;
+		default: _addScript('lang.en.js', main); break;
 	}
-	main();
 });
