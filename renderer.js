@@ -714,7 +714,7 @@ function e3372s_old(callback) {
 	});
 }
 
-function e3372s(callback) {
+function e3372s_dload(callback) {
 	_updateLog('info', 'Flashing mode: E3372s BOOT');
 	dload('e3372s', function() {
 		flash_health('e3372s', 'dload', function() {
