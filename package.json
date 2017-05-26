@@ -1,6 +1,6 @@
 {
   "name": "autoflash",
-  "version": "2017.5.25-1",
+  "version": "2017.5.26-1",
   "description": "Autoflasher for E3372",
   "main": "main.js",
   "scripts": {
