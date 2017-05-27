@@ -67,14 +67,14 @@ detect() {
 						[ $? -eq 0 -o $? -eq 56 ] || { error_handler detect; return 1; }
 					}
 				}
-				port="$(wmic path Win32_PnPEntity where "ClassGuid='{4d36e978-e325-11ce-bfc1-08002be10318}' and Name like '%PC UI Interface%'" get Name /FORMAT:value 2>nul | grep '^Name=' | head -n1 | awk -F[=] '{print $2}' | sed -r 's/.* \((COM\d*)\)/\1/')"
+				port="$(wmic path Win32_PnPEntity where "ClassGuid='{4d36e978-e325-11ce-bfc1-08002be10318}' and Name like '%PC UI Interface%'" get Name /FORMAT:value 2>nul | grep '^Name=' | head -n1 | awk -F[=] '{print $2}' | sed -r 's/.* \((COM[0-9]*)\)/\1/')"
 				[ -n "$port" ] && break
 			done
 			echo -e "$DIALOG_SUCCESS!\n"
 			;;
 	esac
 	echo "[info] Port: $port" >> "$logfile"
-	port_number="$(echo $port | sed -r 's/COM(\d*)/\1/')"
+	port_number="$(echo $port | sed -r 's/COM([0-9]*)/\1/')"
 	model="$(atscr $port AT^HWVER | grep -v AT | grep HWVER | sed -r 's/.*:\"(.*)\"/\1/')"
 	[ -n "$model" ] || model="$(atscr $port AT^DLOADINFO? | grep 'product name' | sed -r 's/product name:(.*)/\1/')"
 	version="$(atscr $port AT^DLOADINFO? | grep swver | sed -r 's/swver:(.*)/\1/')"
@@ -96,7 +96,7 @@ detect_flash() {
 		*)
 			echo $DIALOG_MODEM_SEARCH
 			while true; do
-				flash_port="$(wmic path Win32_PnPEntity where "ClassGuid='{4d36e978-e325-11ce-bfc1-08002be10318}' and (PNPDeviceID like '%VID_12D1&PID_1C05&MI_02%' or PNPDeviceID like '%VID_12D1&PID_1442&MI_00%')" get Name /FORMAT:value 2>nul | grep '^Name=' | head -n1 | awk -F[=] '{print $2}' | sed -r 's/.* \((COM\d*)\)/\1/')"
+				flash_port="$(wmic path Win32_PnPEntity where "ClassGuid='{4d36e978-e325-11ce-bfc1-08002be10318}' and (PNPDeviceID like '%VID_12D1&PID_1C05&MI_02%' or PNPDeviceID like '%VID_12D1&PID_1442&MI_00%')" get Name /FORMAT:value 2>nul | grep '^Name=' | head -n1 | awk -F[=] '{print $2}' | sed -r 's/.* \((COM[0-9]*)\)/\1/')"
 				[ -n "$flash_port" ] && {
 					[ -n "$(atscr $flash_port AT^DLOADINFO? | grep 'dload type:1')" ] && break
 				}
@@ -105,7 +105,7 @@ detect_flash() {
 			;;
 	esac
 	echo "[info] Download port: $flash_port" >> "$logfile"
-	flash_port_number="$(echo $flash_port | sed -r 's/COM(\d*)/\1/')"
+	flash_port_number="$(echo $flash_port | sed -r 's/COM([0-9]*)/\1/')"
 	echo "[success] detect_flash" >> "$logfile"
 }
 
@@ -128,14 +128,14 @@ detect_dload() {
 		*)
 			echo $DIALOG_MODEM_SEARCH
 			while true; do
-				dload_port="$(wmic path Win32_PnPEntity where "ClassGuid='{4d36e978-e325-11ce-bfc1-08002be10318}' and PNPDeviceID like '%VID_12D1&PID_1443%'" get Name /FORMAT:value 2>nul | grep '^Name=' | head -n1 | awk -F[=] '{print $2}' | sed -r 's/.* \((COM\d*)\)/\1/')"
+				dload_port="$(wmic path Win32_PnPEntity where "ClassGuid='{4d36e978-e325-11ce-bfc1-08002be10318}' and PNPDeviceID like '%VID_12D1&PID_1443%'" get Name /FORMAT:value 2>nul | grep '^Name=' | head -n1 | awk -F[=] '{print $2}' | sed -r 's/.* \((COM[0-9]*)\)/\1/')"
 				[ -n "$dload_port" ] && break
 			done
 			echo -e "$DIALOG_SUCCESS!\n"
 			;;
 	esac
 	echo "[info] Boot port: $dload_port" >> "$logfile"
-	dload_port_number="$(echo $dload_port | sed -r 's/COM(\d*)/\1/')"
+	dload_port_number="$(echo $dload_port | sed -r 's/COM([0-9]*)/\1/')"
 	echo "[success] detect_dload" >> "$logfile"
 }
 
