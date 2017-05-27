@@ -421,6 +421,7 @@ function _dload(dload_model, callback) {
 		document.querySelector('body > div.container').appendChild(balong_usbdload_html);
 		balong_usbdload.stdout.on('data', function(data) {
 			$(balong_usbdload_html).append(iconv.decode(data, 'cp866'));
+			$(balong_usbdload_html).html($(balong_usbdload_html).html().replace(/\r\n/g, '\n').replace(/.*\r/g, ''));
 		});
 		balong_usbdload.on('close', function(code) {
 			if(code == 0) {
@@ -439,6 +440,7 @@ function _dload(dload_model, callback) {
 		document.querySelector('body > div.container').appendChild(balong_usbdload_html);
 		balong_usbdload.stdout.on('data', function(data) {
 			$(balong_usbdload_html).append(iconv.decode(data, 'cp866'));
+			$(balong_usbdload_html).html($(balong_usbdload_html).html().replace(/\r\n/g, '\n').replace(/.*\r/g, ''));
 		});
 		balong_usbdload.on('close', function(code) {
 			if(code == 0) {
@@ -469,6 +471,7 @@ function _flash_technological(flash_model, flash_special, callback) {
 		document.querySelector('body > div.container').appendChild(balong_flash_html);
 		balong_flash.stdout.on('data', function(data) {
 			$(balong_flash_html).append(iconv.decode(data, 'cp866'));
+			$(balong_flash_html).html($(balong_flash_html).html().replace(/\r\n/g, '\n').replace(/.*\r/g, ''));
 		});
 		balong_flash.on('close', function(code) {
 			if(code == 0) {
@@ -514,6 +517,7 @@ function _flash_health(flash_model, flash_special, callback) {
 		document.querySelector('body > div.container').appendChild(balong_flash_html);
 		balong_flash.stdout.on('data', function(data) {
 			$(balong_flash_html).append(iconv.decode(data, 'cp866'));
+			$(balong_flash_html).html($(balong_flash_html).html().replace(/\r\n/g, '\n').replace(/.*\r/g, ''));
 		});
 		balong_flash.on('close', function(code) {
 			if(data == 0) {
@@ -559,6 +563,7 @@ function _flash_firmware(flash_model, flash_special, callback) {
 		document.querySelector('body > div.container').appendChild(balong_flash_html);
 		balong_flash.stdout.on('data', function(data) {
 			$(balong_flash_html).append(iconv.decode(data, 'cp866'));
+			$(balong_flash_html).html($(balong_flash_html).html().replace(/\r\n/g, '\n').replace(/.*\r/g, ''));
 		});
 		balong_flash.on('close', function(code) {
 			if(code == 0) {
@@ -577,6 +582,7 @@ function _flash_firmware(flash_model, flash_special, callback) {
 		document.querySelector('body > div.container').appendChild(balong_flash_html);
 		balong_flash.stdout.on('data', function(data) {
 			$(balong_flash_html).append(iconv.decode(data, 'cp866'));
+			$(balong_flash_html).html($(balong_flash_html).html().replace(/\r\n/g, '\n').replace(/.*\r/g, ''));
 		});
 		balong_flash.on('close', function(code) {
 			if(code == 0) {
@@ -622,6 +628,7 @@ function _flash_webui(flash_model, flash_special, callback) {
 		document.querySelector('body > div.container').appendChild(balong_flash_html);
 		balong_flash.stdout.on('data', function(data) {
 			$(balong_flash_html).append(iconv.decode(data, 'cp866'));
+			$(balong_flash_html).html($(balong_flash_html).html().replace(/\r\n/g, '\n').replace(/.*\r/g, ''));
 		});
 		balong_flash.on('close', function(code) {
 			if(code == 0) {
@@ -640,6 +647,7 @@ function _flash_webui(flash_model, flash_special, callback) {
 		document.querySelector('body > div.container').appendChild(balong_flash_html);
 		balong_flash.stdout.on('data', function(data) {
 			$(balong_flash_html).append(iconv.decode(data, 'cp866'));
+			$(balong_flash_html).html($(balong_flash_html).html().replace(/\r\n/g, '\n').replace(/.*\r/g, ''));
 		});
 		balong_flash.on('close', function(code) {
 			if(code == 0) {
