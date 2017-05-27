@@ -863,9 +863,10 @@ function _main() {
 
 	document.title = DIALOG_TITLE;
 
+	document.querySelector('body > div.container').innerHTML = '<center><h3>' + DIALOG_HELLO + '</h3></center>';
+
 	if(!agr_mode) {
-		document.querySelector('body > div.container').innerHTML = '<center><h3>' + DIALOG_HELLO + '</h3></center> \
-								   <p><center>' + DIALOG_MODE + '</center></p> \
+		document.querySelector('body > div.container').innerHTML += '<p><center>' + DIALOG_MODE + '</center></p> \
 								   <p><center> \
 										<button id="mode_one" class="btn btn-primary" title="' + DIALOG_MODE_ONE_DESC_LINE_ONE + '\n' + DIALOG_MODE_ONE_DESC_LINE_TWO + '\n' + DIALOG_MODE_ONE_DESC_LINE_THREE + '">' + DIALOG_MODE_ONE + '</button> \
 										<button id="mode_two" class="btn btn-primary" title="' + DIALOG_MODE_TWO_DESC_LINE_ONE + '\n' + DIALOG_MODE_TWO_DESC_LINE_TWO + '">' + DIALOG_MODE_TWO + '</button> \
