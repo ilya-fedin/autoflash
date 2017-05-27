@@ -67,7 +67,7 @@ detect() {
 						[ $? -eq 0 -o $? -eq 56 ] || { error_handler detect; return 1; }
 					}
 				}
-				port="$(ENumSer | grep 'PC UI Interface' | head -n1 | sed -r 's/(\S*) .*/\1/')"
+				port="$(wmic path Win32_PnPEntity where "ClassGuid='{4d36e978-e325-11ce-bfc1-08002be10318}' and Name like '%PC UI Interface%'" get Name /FORMAT:value 2>nul | grep '^Name=' | head -n1 | awk -F[=] '{print $2}' | sed -r 's/.* \((COM\d*)\)/\1/')"
 				[ -n "$port" ] && break
 			done
 			echo -e "$DIALOG_SUCCESS!\n"
@@ -96,7 +96,7 @@ detect_flash() {
 		*)
 			echo $DIALOG_MODEM_SEARCH
 			while true; do
-				flash_port="$(findcomport -i12d1:1c05:2 -i12d1:1442:0 -v | head -n1 | sed -r 's/(\S*) .*/\1/')"
+				flash_port="$(wmic path Win32_PnPEntity where "ClassGuid='{4d36e978-e325-11ce-bfc1-08002be10318}' and (PNPDeviceID like '%VID_12D1&PID_1C05&MI_02%' or PNPDeviceID like '%VID_12D1&PID_1442&MI_00%')" get Name /FORMAT:value 2>nul | grep '^Name=' | head -n1 | awk -F[=] '{print $2}' | sed -r 's/.* \((COM\d*)\)/\1/')"
 				[ -n "$flash_port" ] && {
 					[ -n "$(atscr $flash_port AT^DLOADINFO? | grep 'dload type:1')" ] && break
 				}
@@ -128,7 +128,7 @@ detect_dload() {
 		*)
 			echo $DIALOG_MODEM_SEARCH
 			while true; do
-				dload_port="$(findcomport -i12d1:1443 -v | head -n1 | sed -r 's/(\S*) .*/\1/')"
+				dload_port="$(wmic path Win32_PnPEntity where "ClassGuid='{4d36e978-e325-11ce-bfc1-08002be10318}' and PNPDeviceID like '%VID_12D1&PID_1443%'" get Name /FORMAT:value 2>nul | grep '^Name=' | head -n1 | awk -F[=] '{print $2}' | sed -r 's/.* \((COM\d*)\)/\1/')"
 				[ -n "$dload_port" ] && break
 			done
 			echo -e "$DIALOG_SUCCESS!\n"
@@ -178,6 +178,7 @@ dload() {
 		balong_usbdload -p$dload_port_number usblsafe-3372s.bin
 		[ $? -eq 0 ] && echo -e "$DIALOG_SUCCESS!\n" || { error_handler "dload $@"; return 1; }
 	fi
+	echo "[success] dload $@" >> "$logfile"
 }
 
 flash_technological() {
@@ -192,6 +193,7 @@ flash_technological() {
 		balong_flash -p$flash_port_number -g1 technological_e3372s.bin
 		[ $? -eq 0 ] && echo -e "$DIALOG_SUCCESS!\n" || { error_handler "flash_technological $@"; return 1; }
 	fi
+	echo "[success] flash_technological $@" >> "$logfile"
 }
 
 flash_health() {
@@ -206,6 +208,7 @@ flash_health() {
 		balong_flash -p$flash_port_number health_e3372s.bin
 		[ $? -eq 0 ] && echo -e "$DIALOG_SUCCESS!\n" || { error_handler "flash_health $@"; return 1; }
 	fi
+	echo "[success] flash_health $@" >> "$logfile"
 }
 
 flash_firmware() {
@@ -223,6 +226,7 @@ flash_firmware() {
 		balong_flash -p$flash_port_number firmware_e3372s.bin
 		[ $? -eq 0 ] && echo -e "$DIALOG_SUCCESS!\n" || { error_handler "flash_firmware $@"; return 1; }
 	fi
+	echo "[success] flash_firmware $@" >> "$logfile"
 }
 
 flash_webui() {
@@ -239,6 +243,7 @@ flash_webui() {
 		balong_flash -p$flash_port_number webui.bin
 		[ $? -eq 0 ] && echo -e "$DIALOG_SUCCESS!\n" || { error_handler "flash_webui $@"; return 1; }
 	fi
+	echo "[success] flash_webui $@" >> "$logfile"
 }
 
 e3372h() {
