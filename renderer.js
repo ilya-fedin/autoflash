@@ -15,11 +15,21 @@ var wmi = require('node-wmi');
 var $ = require('jQuery');
 require('bootstrap');
 
+function _ajaxReadFile(src, callback) {
+	$.ajax({
+		url: src,
+		dataType: 'text',
+		success: function(data, textStatus, jqXHR) {
+			if(typeof(callback) == 'function') callback(data, textStatus, jqXHR);
+		}
+	});
+}
+
 function _addScript(src, callback) {
 	$.ajax({
 		url: src,
 		dataType: 'script',
-		success: function() {
+		success: function(data, textStatus, jqXHR) {
 			if(typeof(callback) == 'function') callback();
 		}
 	});
@@ -198,11 +208,11 @@ function detect(callback) {
 								else hilink_ip = '';
 								if(hilink_ip) {
 									$('body > div.container').append('<p>' + DIALOG_TRY_OPEN_PORT + '</p>');
-									fs.readFile('sw_project_mode.xml', function(err,data) {
+									_ajaxReadFile('sw_project_mode.xml', function(data, textStatus, jqXHR) {
 										$.ajax({
 											type: "POST",
 											url: 'http://' + hilink_ip + '/CGI',
-											data: data.toString()
+											data: data
 										});
 									});
 								}
@@ -752,7 +762,7 @@ function codes() {
 }
 
 function functions() {
-	fs.readFile('functions.' + LANG + '.txt', function(err, data) {
+	_ajaxReadFile('functions.' + LANG + '.txt', function(data, textStatus, jqXHR) {
 		$('body > div.container').append('<pre style="height: ' + ($(window).height() - 40) + 'px;">' + data + '</pre>');
 		$('body > div.container').append('<br>');
 	});
@@ -919,7 +929,10 @@ function main() {
 	});
 }
 
-process.chdir(__dirname);
+if(/.asar$/.test(__dirname))
+	process.chdir(__dirname + '.unpacked');
+else
+	process.chdir(__dirname);
 
 if(path.basename(remote.process.argv[0]) == 'autoflash.exe') {
 	agr_mode = remote.process.argv[1];

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "install": "electron-rebuild",
-    "build": "electron-rebuild --arch=ia32 && electron-packager ./ autoflash --platform=win32 --arch=ia32 --icon=../autoflash.ico --out=../ && electron-rebuild"
+    "build": "electron-rebuild --arch=ia32 && electron-packager ./ autoflash --platform=win32 --arch=ia32 --icon=../autoflash.ico --out=../ --asar.unpack=\"{*.exe,*.bin}\" && electron-rebuild"
   },
   "repository": "https://github.com/ilya-fedin/autoflash",
   "author": "ilya-fedin",
