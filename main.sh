@@ -1,8 +1,7 @@
 #!/bin/sh
-# © ilya-fedin, 2016
-# Site: http://4pda.ru/forum/index.php?showuser=3582018
-# Support: http://4pda.ru/forum/index.php?showtopic=582284
-# Contact: mailto:fedin-ilja2010@ya.ru
+# Autoflasher for E3372
+# © Ilya Fedin, 2016-2017
+# Email: fedin-ilja2010@ya.ru
 
 PATH=".;$PATH"
 
@@ -68,7 +67,13 @@ detect() {
 					}
 				}
 				port="$(wmic path Win32_PnPEntity where "ClassGuid='{4d36e978-e325-11ce-bfc1-08002be10318}' and Name like '%PC UI Interface%'" get Name /FORMAT:value 2>nul | grep '^Name=' | head -n1 | awk -F[=] '{print $2}' | sed -r 's/.* \((COM[0-9]*)\)/\1/')"
-				[ -n "$port" ] && break
+				if [ "$1" = true ]; then
+					[ -n "$port" ] && {
+						[ -n "$(atscr $port AT^DLOADINFO? | grep 'dload type:0')" ] && break
+					}
+				else
+					[ -n "$port" ] && break
+				fi
 			done
 			echo -e "$DIALOG_SUCCESS!\n"
 			;;
@@ -141,7 +146,7 @@ detect_dload() {
 
 factory() {
 	echo "[start] factory" >> "$logfile"
-	detect
+	detect false
 	echo $DIALOG_FACTORY
 	factory="$(atscr $port AT^SFM=1 | grep OK)"
 	if [ -n "$factory" ]; then
@@ -155,7 +160,7 @@ factory() {
 
 godload() {
 	echo "[start] godload" >> "$logfile"
-	detect
+	detect false
 	echo $DIALOG_GODLOAD
 	godload="$(atscr $port AT^GODLOAD | grep OK)"
 	if [ -n "$godload" ]; then
@@ -329,7 +334,7 @@ unknown_model() {
 
 start() {
 	clear
-	detect
+	detect true
 	if [ "$(echo $model | grep CL2E3372HM)" ]; then
 		echo "[info] Model: Huawei E3372h" >> "$logfile"
 		echo "[info] Firmware: $version" >> "$logfile"
@@ -403,6 +408,15 @@ while true; do
 	echo "autoflash - $(date -R)" >> "$logfile"
 	echo "************************************************************" >> "$logfile"
 	echo >> "$logfile"	
+
+	skip_all=false
+
+	port=''
+	port_number=''
+	flash_port=''
+	flash_port_numer=''
+	dload_port=''
+	dload_port_number=''
 
 	echo $DIALOG_HELLO
 	echo
