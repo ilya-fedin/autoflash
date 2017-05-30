@@ -68,11 +68,11 @@ detect() {
 				}
 				port="$(wmic path Win32_PnPEntity where "ClassGuid='{4d36e978-e325-11ce-bfc1-08002be10318}' and Name like '%PC UI Interface%'" get Name /FORMAT:value 2>nul | grep '^Name=' | head -n1 | awk -F[=] '{print $2}' | sed -r 's/.* \((COM[0-9]*)\)/\1/')"
 				if [ "$1" = true ]; then
+					[ -n "$port" ] && break
+				else
 					[ -n "$port" ] && {
 						[ -n "$(atscr $port AT^DLOADINFO? | grep 'dload type:0')" ] && break
 					}
-				else
-					[ -n "$port" ] && break
 				fi
 			done
 			echo -e "$DIALOG_SUCCESS!\n"
@@ -146,7 +146,7 @@ detect_dload() {
 
 factory() {
 	echo "[start] factory" >> "$logfile"
-	detect false
+	detect true
 	echo $DIALOG_FACTORY
 	factory="$(atscr $port AT^SFM=1 | grep OK)"
 	if [ -n "$factory" ]; then
@@ -160,7 +160,7 @@ factory() {
 
 godload() {
 	echo "[start] godload" >> "$logfile"
-	detect false
+	detect true
 	echo $DIALOG_GODLOAD
 	godload="$(atscr $port AT^GODLOAD | grep OK)"
 	if [ -n "$godload" ]; then
@@ -334,7 +334,7 @@ unknown_model() {
 
 start() {
 	clear
-	detect true
+	detect false
 	if [ "$(echo $model | grep CL2E3372HM)" ]; then
 		echo "[info] Model: Huawei E3372h" >> "$logfile"
 		echo "[info] Firmware: $version" >> "$logfile"
