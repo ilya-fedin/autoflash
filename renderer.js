@@ -10,7 +10,7 @@ var exec = require('child_process').exec;
 var spawn = require('child_process').spawn;
 var path = require('path');
 var iconv = require('iconv-lite');
-var SerialPort = require('serialport');
+// var SerialPort = require('serialport');
 var wmi = require('node-wmi');
 var $ = require('jQuery');
 require('bootstrap');
@@ -48,15 +48,15 @@ function _updateLog(level, data) {
 }
 
 function error_handler(func, args, callback) {
-	_updateLog('error', func + ' ' + JSON.stringify(args));
+	_updateLog('error', func.name + ' ' + JSON.stringify(args));
 	var error_mess = '<p>' + DIALOG_ERROR + '! '+ DIALOG_WHAT_TO_DO + ' [s(' + DIALOG_WHAT_TO_DO_SKIP + ')/R(' + DIALOG_WHAT_TO_DO_RETRY + ')/e(' + DIALOG_WHAT_TO_DO_EXIT + ')/a(' + DIALOG_WHAT_TO_DO_SKIP_ALL + ')] ';
 	if(skip_all === true)
 		error_mess += 'a';
 	else
 		error_mess += '<input id="error_handler" type="text">';
 	error_mess += '</p>';
-	$('body > div.container').append('<br>');
 	$('body > div.container').append(error_mess);
+	$('body > div.container').append('<br>');
 	if(!skip_all) {
 		$('input#error_handler').on('keydown', function(e) {
 			if (e.which == 13) {
@@ -76,7 +76,7 @@ function error_handler(func, args, callback) {
 						skip_all = true;
 						break;
 					default:
-						if(typeof(args) == 'object') func.apply(...args);
+						if(args && typeof(args) == 'object') func.apply(this, args);
 						else func();
 						break;
 				}
@@ -87,26 +87,23 @@ function error_handler(func, args, callback) {
 
 function _detectSuccess(callback) {
 	exec('atscr ' + port + ' "AT^HWVER"', function(error, stdout, stderr) {
-		model = /.*:\"(.*)\"/.exec($.grep(stdout.split('\n'), function(elem, idx) {
+		model = $(/.*:\"(.*)\"/.exec($.grep(stdout.split('\n'), function(elem, idx) {
 			if(!/AT/.test(elem) && /HWVER/.test(elem))
 				return true;
 			else
 				return false;
-		})[0]);
-		if(model) model = model[1];
+		})[0]))[1];
 		exec('atscr ' + port + ' "AT^DLOADINFO?"', function(error, stdout, stderr) {
 			if(!model) {
-				model = /product name:(.*)/.exec($.grep(stdout.split('\n'), function(elem, idx) {
+				model = $(/product name:(.*)/.exec($.grep(stdout.split('\n'), function(elem, idx) {
 					return /product name/.test(elem);
-				})[0]);
-				if(model) model = model[1];
-				else model = '';
+				})[0]))[1];
+				if(!model) model = '';
 			}
-			version = /swver:(.*)/.exec($.grep(stdout.split('\n'), function(elem, idx) {
+			version = $(/swver:(.*)/.exec($.grep(stdout.split('\n'), function(elem, idx) {
 				return /swver/.test(elem);
-			})[0]);
-			if(version) version = version[1];
-			else version = '';
+			})[0]))[1];
+			if(!version) version = '';
 			if(typeof(callback) == 'function') callback();
 		});
 	});
@@ -117,32 +114,29 @@ function _detectSuccess(callback) {
 		// atscr.flush(function() {
 			// atscr.write('AT^HWVER', function() {
 				// atscr.drain(function() {
-					// model = /.*:\"(.*)\"/.exec($.grep(atscr.read(4096).toString().split('\n'), function(elem, idx) {
+					// model = $(/.*:\"(.*)\"/.exec($.grep(atscr.read(4096).toString().split('\n'), function(elem, idx) {
 						// if(!/AT/.test(elem) && /HWVER/.test(elem))
 							// return true;
 						// else
 							// return false;
-					// })[0]);
-					// if(model) model = model[1];
-					// else model = '';
+					// })[0]))[1];
+					// if(!model) model = '';
 					// atscr.flush(function() {
 						// atscr.write('AT^DLOADINFO?', function() {
 							// atscr.drain(function() {
 								// if(!model) {
-									// model = /product name:(.*)/.exec($.grep(atscr.read(4096).toString().split('\n'), function(elem, idx) {
+									// model = $(/product name:(.*)/.exec($.grep(atscr.read(4096).toString().split('\n'), function(elem, idx) {
 										// return /product name/.test(elem);
-									// })[0]);
-									// if(model) model = model[1];
-									// else model = '';
+									// })[0]))[1];
+									// if(!model) model = '';
 								// }
 								// atscr.flush(function() {
 									// atscr.write('AT^DLOADINFO?', function() {
 										// atscr.drain(function() {
-											// version = /swver:(.*)/.exec($.grep(atscr.read(4096).toString().split('\n'), function(elem, idx) {
+											// version = $(/swver:(.*)/.exec($.grep(atscr.read(4096).toString().split('\n'), function(elem, idx) {
 												// return /swver/.test(elem);
-											// })[0]);
-											// if(version) version = version[1];
-											// else version = '';
+											// })[0]))[1];
+											// if(!version) version = '';
 											// atscr.close(function() {
 												// if(typeof(callback) == 'function') callback();
 											// });
@@ -158,15 +152,14 @@ function _detectSuccess(callback) {
 	// });
 // }
 
-function detect(callback) {
+function detect(useInFlashMode, callback) {
 	_updateLog('start', 'detect');
 	switch(mode) {
 		case 'port':
 			if(typeof(agr_port) != 'undefined') {
 				port = agr_port;
-				port_number = /COM(\d*)/.exec(port);
-				if(port_number) port_number = port_number[1];
-				else port_number = '';
+				port_number = $(/COM(\d*)/.exec(port))[1];
+				if(!port_number) port_number = '';
 				_updateLog('info', 'Port: ' + port);
 				$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
 				$('body > div.container').append('<br>');
@@ -177,8 +170,8 @@ function detect(callback) {
 				$('input#port').on('keydown', function(e) {
 					if (e.which == 13) {
 						port = $(this).val();
-						port_number = /COM(\d*)/.exec(port);
-						if(port_number) port_number = port_number[1];
+						port_number = $(/COM(\d*)/.exec(port))[1];
+						if(!port_number) port_number = '';
 						_updateLog('info', 'Port: ' + port);
 						$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
 						$('body > div.container').append('<br>');
@@ -204,7 +197,7 @@ function detect(callback) {
 								class: 'Win32_NetworkAdapterConfiguration',
 								where: 'Index=' + hilink_index
 							}, function(err, result) {
-								if(result) if(result[0].DefaultIPGateway) hilink_ip = result[0].DefaultIPGateway[0];
+								if(result) if(result[0]) if(result[0].DefaultIPGateway) hilink_ip = result[0].DefaultIPGateway[0];
 								else hilink_ip = '';
 								if(hilink_ip) {
 									$('body > div.container').append('<p>' + DIALOG_TRY_OPEN_PORT + '</p>');
@@ -222,20 +215,35 @@ function detect(callback) {
 							class: 'Win32_PnPEntity',
 							where: 'ClassGuid="{4d36e978-e325-11ce-bfc1-08002be10318}" and Name like "%PC UI Interface%"'
 						}, function(err, result) {
-							if(result) port = /.* \((COM\d*)\)/.exec(result[0].Name);
+							if(result) if(result[0]) if(result[0].Name) port = $(/.* \((COM\d*)\)/.exec(result[0].Name))[1];
 							else port = '';
-							if(port) port = port[1];
+							if(!port) port = '';
 							if(port) {
-								port_number = /COM(\d*)/.exec(port);
-								if(port_number) port_number = port_number[1];
-								else port_number = '';
-								_updateLog('info', 'Port: ' + port + '');
-								$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
-								$('body > div.container').append('<br>');
-								_updateLog('success', 'detect');
-								_detectSuccess(callback);
-							}
-							else {
+								if(useInFlashMode === true) {
+									port_number = $(/COM(\d*)/.exec(port))[1];
+									if(!port_number) port_number = '';
+									_updateLog('info', 'Port: ' + port );
+									$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
+									$('body > div.container').append('<br>');
+									_updateLog('success', 'detect');
+									_detectSuccess(callback);
+								} else {
+									exec('atscr ' + port + ' "AT^DLOADINFO?"', function(error, stdout, stderr) {
+										if(stdout.indexOf('dload type:0') != -1) {
+											port_number = $(/COM(\d*)/.exec(port))[1];
+											if(!port_number) port_number = '';
+											_updateLog('info', 'Port: ' + port );
+											$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
+											$('body > div.container').append('<br>');
+											_updateLog('success', 'detect');
+											_detectSuccess(callback);
+										} else {
+											port_number = '';
+											setTimeout(whileFunc, 0, callback);
+										}
+									});
+								}
+							} else {
 								port_number = '';
 								setTimeout(whileFunc, 0, callback);
 							}
@@ -253,9 +261,8 @@ function detect_flash(callback) {
 		case 'port':
 			if(typeof(agr_flash_port) != 'undefined') {
 				flash_port = agr_flash_port;
-				flash_port_number = /COM(\d*)/.exec(flash_port);
-				if(flash_port_number) flash_port_number = flash_port_number[1];
-				else flash_port_number = '';
+				flash_port_number = $(/COM(\d*)/.exec(flash_port))[1];
+				if(!flash_port_number) flash_port_number = '';
 				_updateLog('info', 'Download port: ' + flash_port);
 				$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
 				$('body > div.container').append('<br>');
@@ -266,9 +273,8 @@ function detect_flash(callback) {
 				$('input#flash_port').on('keydown', function(e) {
 					if (e.which == 13) {
 						flash_port = $(this).val();
-						flash_port_number = /COM(\d*)/.exec(flash_port);
-						if(flash_port_number) flash_port_number = flash_port_number[1];
-						else flash_port_number = '';
+						flash_port_number = $(/COM(\d*)/.exec(flash_port))[1];
+						if(!flash_port_number) flash_port_number = '';
 						_updateLog('info', 'Download port: ' + flash_port);
 						$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
 						$('body > div.container').append('<br>');
@@ -287,28 +293,25 @@ function detect_flash(callback) {
 						class: 'Win32_PnPEntity',
 						where: 'ClassGuid="{4d36e978-e325-11ce-bfc1-08002be10318}" and (PNPDeviceID like "%VID_12D1&PID_1C05&MI_02%" or PNPDeviceID like "%VID_12D1&PID_1442&MI_00%")'
 					}, function(err, result) {
-						if(result) flash_port = /.* \((COM\d*)\)/.exec(result[0].Name);
+						if(result) flash_port = $(/.* \((COM\d*)\)/.exec(result[0].Name))[1];
 						else flash_port = '';
-						if(flash_port) flash_port = flash_port[1];
+						if(!flash_port) flash_port = '';
 						if(flash_port) {
 							exec('atscr ' + flash_port + ' "AT^DLOADINFO?"', function(error, stdout, stderr) {
 								if(stdout.indexOf('dload type:1') != -1) {
-									flash_port_number = /COM(\d*)/.exec(flash_port);
-									if(flash_port_number) flash_port_number = flash_port_number[1];
-									else flash_port_number = '';
+									flash_port_number = $(/COM(\d*)/.exec(flash_port))[1];
+									if(!flash_port_number) flash_port_number = '';
 									_updateLog('info', 'Download port: ' + flash_port);
 									$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
 									$('body > div.container').append('<br>');
 									_updateLog('success', 'detect_flash');
 									if(typeof(callback) == 'function') callback();
-								}
-								else {
+								} else {
 									flash_port_number = '';
 									setTimeout(whileFunc, 0, callback);
 								}
 							});
-						}
-						else {
+						} else {
 							flash_port_number = '';
 							setTimeout(whileFunc, 0, callback);
 						}
@@ -328,9 +331,8 @@ function detect_dload(callback) {
 			case 'port':
 				if(typeof(agr_dload_port) != 'undefined') {
 					dload_port = agr_dload_port;
-					dload_port_number = /COM(\d*)/.exec(dload_port);
-					if(dload_port_number) dload_port_number = dload_port_number[1];
-					else dload_port_number = '';
+					dload_port_number = $(/COM(\d*)/.exec(dload_port))[1];
+					if(!dload_port_number) dload_port_number = '';
 					_updateLog('info', 'Boot port: ' + dload_port);
 					$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
 					$('body > div.container').append('<br>');
@@ -341,10 +343,9 @@ function detect_dload(callback) {
 					$('input#dload_port').on('keydown', function(e) {
 						if (e.which == 13) {
 							dload_port = $(this).val();
-							dload_port_number = /COM(\d*)/.exec(dload_port);
-							if(dload_port_number) dload_port_number = dload_port_number[1];
-							else dload_port_number = '';
-							_updateLog('info', 'Boot port: ' + dload_port + '');
+							dload_port_number = $(/COM(\d*)/.exec(dload_port))[1];
+							if(!dload_port_number) dload_port_number = '';
+							_updateLog('info', 'Boot port: ' + dload_port );
 							$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
 							$('body > div.container').append('<br>');
 							_updateLog('success', 'detect_dload');
@@ -362,20 +363,18 @@ function detect_dload(callback) {
 							class: 'Win32_PnPEntity',
 							where: 'ClassGuid="{4d36e978-e325-11ce-bfc1-08002be10318}" and PNPDeviceID like "%VID_12D1&PID_1443%"'
 						}, function(err, result) {
-							if(result) dload_port = /.* \((COM\d*)\)/.exec(result[0].Name);
+							if(result) if(result[0]) if(result[0].Name) dload_port = $(/.* \((COM\d*)\)/.exec(result[0].Name))[1];
 							else dload_port = '';
-							if(dload_port) dload_port = dload_port[1];
-							if(dload_port) {
-								dload_port_number = /COM(\d*)/.exec(dload_port);
-								if(dload_port_number) dload_port_number = dload_port_number[1];
-								else dload_port_number = '';
+							if(dload_port) dload_port = '';
+							if(!dload_port) {
+								dload_port_number = $(/COM(\d*)/.exec(dload_port))[1];
+								if(!dload_port_number) dload_port_number = '';
 								_updateLog('info', 'Boot port: ' + dload_port);
 								$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
 								$('body > div.container').append('<br>');
 								_updateLog('success', 'detect_dload');
 								if(typeof(callback) == 'function') callback();
-							}
-							else {
+							} else {
 								dload_port_number = '';
 								setTimeout(whileFunc, 0, callback);
 							}
@@ -389,14 +388,14 @@ function detect_dload(callback) {
 
 function factory(callback) {
 	_updateLog('start', 'factory');
-	detect(function() {
+	detect(false, function() {
 		$('body > div.container').append('<p>' + DIALOG_FACTORY + '</p>');
 		exec('atscr ' + port + ' "AT^SFM=1"', function(error,stdout, stderr) {
 			if(stdout.indexOf('OK') != -1) {
 				$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
 				$('body > div.container').append('<br>');
 			} else {
-				error_handler(factory, null, callback);
+				error_handler(factory, [callback], callback);
 				return false;
 			}
 			_updateLog('success', 'factory');
@@ -407,14 +406,14 @@ function factory(callback) {
 
 function godload(callback) {
 	_updateLog('start', 'godload');
-	detect(function() {
+	detect(false, function() {
 		$('body > div.container').append('<p>' + DIALOG_GODLOAD + '</p>');
 		exec('atscr ' + port + ' "AT^GODLOAD"', function(error, stdout, stderr) {
 			if(stdout.indexOf('OK') != -1) {
 				$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
 				$('body > div.container').append('<br>');
 			} else {
-				error_handler(godload, null, callback);
+				error_handler(godload, [callback], callback);
 				return false;
 			}
 			_updateLog('success', 'godload');
@@ -437,7 +436,7 @@ function _dload(dload_model, callback) {
 			if(code == 0) {
 				$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
 				$('body > div.container').append('<br>');
-				_updateLog('success', 'dload ' + dload_model + '');
+				_updateLog('success', 'dload ' + dload_model );
 			} else {
 				error_handler(dload, [dload_model, callback], callback);
 				return false;
@@ -456,7 +455,7 @@ function _dload(dload_model, callback) {
 			if(code == 0) {
 				$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
 				$('body > div.container').append('<br>');
-				_updateLog('success', 'dload ' + dload_model + '');
+				_updateLog('success', 'dload ' + dload_model );
 			} else {
 				error_handler(dload, [dload_model, callback], callback);
 				return false;
@@ -467,7 +466,7 @@ function _dload(dload_model, callback) {
 }
 
 function dload(dload_model, callback) {
-	_updateLog('start', 'dload ' + dload_model + '');
+	_updateLog('start', 'dload ' + dload_model );
 	detect_dload(function() {
 		_dload(dload_model, callback);
 	});
@@ -805,7 +804,7 @@ function _end() {
 
 function start() {
 	$('body > div.container').html('');
-	detect(function() {
+	detect(true, function() {
 		if(model.indexOf('CL2E3372HM') != -1) {
 			_updateLog('info', 'Model: Huawei E3372h');
 			_updateLog('info', 'Firmware: ' + version);
@@ -843,13 +842,13 @@ function start() {
 							default:
 								_updateLog('info', 'Modded firmware: false');
 								if(model.indexOf('CL2E3372HM') != -1) {
-									if(/[0-9]*\.([0-9]*)\.[0-9]*\.[0-9]*\.[0-9]*/.exec(version)[1] > 315 || (/[0-9]*\.([0-9]*)\.[0-9]*\.[0-9]*\.[0-9]*/.exec(version) == 315 && /[0-9]*\.[0-9]*\.[0-9]*\.([0-9]*)\.[0-9]*/.exec(version) > 0)) // игла
+									if($(/[0-9]*\.([0-9]*)\.[0-9]*\.[0-9]*\.[0-9]*/.exec(version))[1] > 315 || (/[0-9]*\.([0-9]*)\.[0-9]*\.[0-9]*\.[0-9]*/.exec(version) == 315 && /[0-9]*\.[0-9]*\.[0-9]*\.([0-9]*)\.[0-9]*/.exec(version) > 0)) // игла
 										e3372h_dload(_end);
 									else
 										e3372h(_end)
 								}
 								else if(model.indexOf('CL1E3372SM') != -1) {
-									if(/[0-9]*\.([0-9]*)\.[0-9]*\.[0-9]*\.[0-9]*/.exec(version) < 300) // старые модели без проверки подписи
+									if($(/[0-9]*\.([0-9]*)\.[0-9]*\.[0-9]*\.[0-9]*/.exec(version))[1] < 300) // старые модели без проверки подписи
 										e3372s_old(_end);
 									else
 										e3372s(_end);
@@ -878,6 +877,13 @@ function _main() {
 	_updateLog(null, '');
 
 	skip_all = false;
+
+	port = '';
+	port_number = '';
+	flash_port = '';
+	flash_port_numer = '';
+	dload_port = '';
+	dload_port_number = '';
 
 	document.title = DIALOG_TITLE;
 
@@ -913,7 +919,7 @@ function _main() {
 		});
 	} else {
 		mode = agr_mode;
-		_updateLog('info', 'Autoflash mode: ' + mode + '');
+		_updateLog('info', 'Autoflash mode: ' + mode );
 		start();
 	}
 }
