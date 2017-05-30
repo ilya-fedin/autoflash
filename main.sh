@@ -43,7 +43,7 @@ error_handler() {
 }
 
 detect() {
-	echo "[start] detect" >> "$logfile"
+	echo "[start] detect $@" >> "$logfile"
 	case $mode in
 		port)
 			if [ -n "$agr_port" ]; then
@@ -63,7 +63,7 @@ detect() {
 					[ -n "$hilink_ip" ] && {
 						echo $DIALOG_TRY_OPEN_PORT
 						curl -X POST -d @sw_project_mode.xml http://$hilink_ip/CGI >> "$logfile" 2>&1
-						[ $? -eq 0 -o $? -eq 56 ] || { error_handler detect; return 1; }
+						[ $? -eq 0 -o $? -eq 56 ] || { error_handler "detect $@"; return 1; }
 					}
 				}
 				port="$(wmic path Win32_PnPEntity where "ClassGuid='{4d36e978-e325-11ce-bfc1-08002be10318}' and Name like '%PC UI Interface%'" get Name /FORMAT:value 2>nul | grep '^Name=' | head -n1 | awk -F[=] '{print $2}' | sed -r 's/.* \((COM[0-9]*)\)/\1/')"
@@ -83,7 +83,7 @@ detect() {
 	model="$(atscr $port AT^HWVER | grep -v AT | grep HWVER | sed -r 's/.*:\"(.*)\"/\1/')"
 	[ -n "$model" ] || model="$(atscr $port AT^DLOADINFO? | grep 'product name' | sed -r 's/product name:(.*)/\1/')"
 	version="$(atscr $port AT^DLOADINFO? | grep swver | sed -r 's/swver:(.*)/\1/')"
-	echo "[success] detect" >> "$logfile"
+	echo "[success] detect $@" >> "$logfile"
 }
 
 detect_flash() {
