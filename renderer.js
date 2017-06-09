@@ -152,6 +152,46 @@ function _detectSuccess(callback) {
 	// });
 // }
 
+function _detect(useInFlashMode, whileFunc, callback) {
+	wmi.Query({
+		class: 'Win32_PnPEntity',
+		where: 'ClassGuid="{4d36e978-e325-11ce-bfc1-08002be10318}" and Name like "%PC UI Interface%"'
+	}, function(err, result) {
+		if(result) if(result[0]) if(result[0].Name) port = $(/.* \((COM\d*)\)/.exec(result[0].Name))[1];
+		else port = '';
+		if(!port) port = '';
+		if(port) {
+			if(useInFlashMode === true) {
+				port_number = $(/COM(\d*)/.exec(port))[1];
+				if(!port_number) port_number = '';
+				_updateLog('info', 'Port: ' + port );
+				$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
+				$('body > div.container').append('<br>');
+				_updateLog('success', 'detect');
+				_detectSuccess(callback);
+			} else {
+				exec('atscr ' + port + ' "AT^DLOADINFO?"', function(error, stdout, stderr) {
+					if(stdout.indexOf('dload type:0') != -1) {
+						port_number = $(/COM(\d*)/.exec(port))[1];
+						if(!port_number) port_number = '';
+						_updateLog('info', 'Port: ' + port );
+						$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
+						$('body > div.container').append('<br>');
+						_updateLog('success', 'detect');
+						_detectSuccess(callback);
+					} else {
+						port_number = '';
+						setTimeout(whileFunc, 0, callback);
+					}
+				});
+			}
+		} else {
+			port_number = '';
+			setTimeout(whileFunc, 0, callback);
+		}
+	});
+}
+
 function detect(useInFlashMode, callback) {
 	_updateLog('start', 'detect');
 	switch(mode) {
@@ -164,7 +204,7 @@ function detect(useInFlashMode, callback) {
 				$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
 				$('body > div.container').append('<br>');
 				_updateLog('success', 'detect');
-				_detectSuccess();
+				_detectSuccess(callback);
 			} else {
 				$('body > div.container').append('<p>' + DIALOG_PORT_NUMBER + ': <input id="port" type="text"></p>');
 				$('input#port').on('keydown', function(e) {
@@ -177,7 +217,7 @@ function detect(useInFlashMode, callback) {
 						$('body > div.container').append('<br>');
 						_updateLog('success', 'detect');
 						$(this).replaceWith('<span>' + $(this).val() + '</span>');
-						_detectSuccess();
+						_detectSuccess(callback);
 					}
 				});
 			}
@@ -205,49 +245,15 @@ function detect(useInFlashMode, callback) {
 										$.ajax({
 											type: "POST",
 											url: 'http://' + hilink_ip + '/CGI',
-											data: data
+											data: data,
+											complete: function(jqXHR, textStatus) {
+												_detect(useInFlashMode, whileFunc, callback);
+											}
 										});
 									});
-								}
+								} else _detect(useInFlashMode, whileFunc, callback);
 							});
-						}
-						wmi.Query({
-							class: 'Win32_PnPEntity',
-							where: 'ClassGuid="{4d36e978-e325-11ce-bfc1-08002be10318}" and Name like "%PC UI Interface%"'
-						}, function(err, result) {
-							if(result) if(result[0]) if(result[0].Name) port = $(/.* \((COM\d*)\)/.exec(result[0].Name))[1];
-							else port = '';
-							if(!port) port = '';
-							if(port) {
-								if(useInFlashMode === true) {
-									port_number = $(/COM(\d*)/.exec(port))[1];
-									if(!port_number) port_number = '';
-									_updateLog('info', 'Port: ' + port );
-									$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
-									$('body > div.container').append('<br>');
-									_updateLog('success', 'detect');
-									_detectSuccess(callback);
-								} else {
-									exec('atscr ' + port + ' "AT^DLOADINFO?"', function(error, stdout, stderr) {
-										if(stdout.indexOf('dload type:0') != -1) {
-											port_number = $(/COM(\d*)/.exec(port))[1];
-											if(!port_number) port_number = '';
-											_updateLog('info', 'Port: ' + port );
-											$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
-											$('body > div.container').append('<br>');
-											_updateLog('success', 'detect');
-											_detectSuccess(callback);
-										} else {
-											port_number = '';
-											setTimeout(whileFunc, 0, callback);
-										}
-									});
-								}
-							} else {
-								port_number = '';
-								setTimeout(whileFunc, 0, callback);
-							}
-						}); 
+						} else _detect(useInFlashMode, whileFunc, callback);
 					});
 				})(callback);
 			}, 0, callback);
