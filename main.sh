@@ -146,7 +146,7 @@ detect_dload() {
 
 factory() {
 	echo "[start] factory" >> "$logfile"
-	detect true
+	detect false
 	echo $DIALOG_FACTORY
 	factory="$(atscr $port AT^SFM=1 | grep OK)"
 	if [ -n "$factory" ]; then
@@ -160,7 +160,7 @@ factory() {
 
 godload() {
 	echo "[start] godload" >> "$logfile"
-	detect true
+	detect false
 	echo $DIALOG_GODLOAD
 	godload="$(atscr $port AT^GODLOAD | grep OK)"
 	if [ -n "$godload" ]; then
@@ -334,7 +334,7 @@ unknown_model() {
 
 start() {
 	clear
-	detect false
+	detect true
 	if [ "$(echo $model | grep CL2E3372HM)" ]; then
 		echo "[info] Model: Huawei E3372h" >> "$logfile"
 		echo "[info] Firmware: $version" >> "$logfile"
