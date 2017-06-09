@@ -13,19 +13,10 @@ int main(int argc, char** argv) {
 	int returncode = 0;
 
 	if(argc > 1) {
-		char* arguments = NULL;
 		for(int i = 1; i < argc; i++) {
-			if(arguments) {
-				arguments = realloc(arguments, strlen(arguments) + strlen(arg_open) + strlen(argv[i]) + strlen(arg_close) + 1);
-				sprintf(arguments, "%s%s%s%s", arguments, arg_open, argv[i], arg_close);
-			} else {
-				arguments = malloc(strlen(arg_open) + strlen(argv[i]) + strlen(arg_close) + 1);
-				sprintf(arguments, "%s%s%s", arg_open, argv[i], arg_close);
-			}
+			command = realloc(command, strlen(command) + strlen(arg_open) + strlen(argv[i]) + strlen(arg_close) + 1);
+			sprintf(command, "%s%s%s%s", command, arg_open, argv[i], arg_close);
 		}
-		command = realloc(command, strlen(command) + strlen(" ") + strlen(arguments) + 1);
-		sprintf(command, "%s %s", command, arguments);
-		free(arguments);
 	}
 
 	SetCurrentDirectory(dirname(argv[0]));
