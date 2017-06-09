@@ -1,4 +1,0 @@
-;!@Install@!UTF-8!
-GUIMode="1"
-RunProgram="main.exe"
-;!@InstallEnd@!

@@ -1,5 +1,7 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
+#include <windows.h>
 
 int main(int argc, char** argv) {
 	char* arg0 = "sh.exe main.sh";
@@ -30,6 +32,8 @@ int main(int argc, char** argv) {
 		strcat(command, arguments);
 		free(arguments);
 	}
+
+	SetCurrentDirectory(dirname(argv[0]));
 
 	returncode = system(command);
 
