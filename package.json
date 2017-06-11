@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "install": "electron-rebuild",
-    "build": "electron-rebuild --arch=ia32 && electron-packager ./ autoflash --platform=win32 --arch=ia32 --icon=../autoflash.ico --out=../ --asar.unpack=\"{*.exe,*.bin}\" && electron-rebuild"
+    "build": "electron-rebuild --arch=ia32 && electron-packager ./ --app-copyright=\"Copyright (C) 2016-2017 Ilya Fedin. All rights reserved.\" --platform=win32 --arch=ia32 --icon=../autoflash.ico --out=../ --asar.unpack=\"{*.exe,*.bin}\" --win32metadata.CompanyName=\"Ilya Fedin\" --win32metadata.FileDescription=\"Autoflasher for E3372\" --win32metadata.InternalName=\"autoflash.exe\" --win32metadata.ProductName=\"Autoflasher for E3372\" --win32metadata.OriginalFilename=\"autoflash.exe\" && electron-rebuild"
   },
   "repository": "https://github.com/ilya-fedin/autoflash",
   "author": "ilya-fedin",
