@@ -1,0 +1,8 @@
+[FILENAMES]
+Exe=          7zS2con.sfx
+SaveAs=       autoflash.sfx
+Log=          NUL
+[COMMANDS]
+-addoverwrite ../autoflash.ico, ICONGROUP,1,1033
+-addoverwrite autoflash.res, VERSIONINFO,1,1033
+-add          user.manifest, MANIFEST,1,1033
