@@ -12,7 +12,8 @@ var path = require('path');
 var iconv = require('iconv-lite');
 // var SerialPort = require('serialport');
 var wmi = require('node-wmi');
-var $ = require('jQuery');
+var $ = require('jquery');
+global.jQuery = $;
 require('bootstrap');
 
 function _ajaxReadFile(src, callback) {
