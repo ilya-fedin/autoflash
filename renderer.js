@@ -332,65 +332,68 @@ function detect_flash(callback) {
 function detect_dload(callback) {
 	_updateLog('start', 'detect_dload');
 	$('body > div.container').append('<p>' + DIALOG_SHORT_DLOAD_POINT + '</p>');
-	$(document).on('keydown', function(e) {
-		$(document).off('keydown');
-		switch(mode) {
-			case 'port':
-				if(typeof(agr_dload_port) != 'undefined') {
-					dload_port = agr_dload_port;
-					dload_port_number = $(/COM(\d*)/.exec(dload_port))[1];
-					if(!dload_port_number) dload_port_number = '';
-					_updateLog('info', 'Boot port: ' + dload_port);
-					$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
-					$('body > div.container').append('<br>');
-					_updateLog('success', 'detect_dload');
-					if(typeof(callback) == 'function') callback();
-				} else {
-					$('body > div.container').append('<p>' + DIALOG_PORT_NUMBER + ': <input id="dload_port" type="text"></p>');
-					$('input#dload_port').on('keydown', function(e) {
-						if (e.which == 13) {
-							dload_port = $(this).val();
-							dload_port_number = $(/COM(\d*)/.exec(dload_port))[1];
-							if(!dload_port_number) dload_port_number = '';
-							_updateLog('info', 'Boot port: ' + dload_port );
-							$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
-							$('body > div.container').append('<br>');
-							_updateLog('success', 'detect_dload');
-							$(this).replaceWith('<span>' + $(this).val() + '</span>');
-							if(typeof(callback) == 'function') callback();
-						}
-					});
-				}
-				break;
-			default:
-				$('body > div.container').append('<p>' + DIALOG_MODEM_SEARCH + '</p>');
-				setTimeout(function(callback) {
-					(function whileFunc(callback) {
-						wmi.Query({
-							class: 'Win32_PnPEntity',
-							where: 'ClassGuid="{4d36e978-e325-11ce-bfc1-08002be10318}" and PNPDeviceID like "%VID_12D1&PID_1443%"'
-						}, function(err, result) {
-							if(result) if(result[0]) if(result[0].Name) dload_port = $(/.* \((COM\d*)\)/.exec(result[0].Name))[1];
-							else dload_port = '';
-							if(dload_port) dload_port = '';
-							if(!dload_port) {
+	exec('ShortBootPoint');
+	setTimeout(function() {
+		$(document).on('keydown', function(e) {
+			$(document).off('keydown');
+			switch(mode) {
+				case 'port':
+					if(typeof(agr_dload_port) != 'undefined') {
+						dload_port = agr_dload_port;
+						dload_port_number = $(/COM(\d*)/.exec(dload_port))[1];
+						if(!dload_port_number) dload_port_number = '';
+						_updateLog('info', 'Boot port: ' + dload_port);
+						$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
+						$('body > div.container').append('<br>');
+						_updateLog('success', 'detect_dload');
+						if(typeof(callback) == 'function') callback();
+					} else {
+						$('body > div.container').append('<p>' + DIALOG_PORT_NUMBER + ': <input id="dload_port" type="text"></p>');
+						$('input#dload_port').on('keydown', function(e) {
+							if (e.which == 13) {
+								dload_port = $(this).val();
 								dload_port_number = $(/COM(\d*)/.exec(dload_port))[1];
 								if(!dload_port_number) dload_port_number = '';
-								_updateLog('info', 'Boot port: ' + dload_port);
+								_updateLog('info', 'Boot port: ' + dload_port );
 								$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
 								$('body > div.container').append('<br>');
 								_updateLog('success', 'detect_dload');
+								$(this).replaceWith('<span>' + $(this).val() + '</span>');
 								if(typeof(callback) == 'function') callback();
-							} else {
-								dload_port_number = '';
-								setTimeout(whileFunc, 0, callback);
 							}
-						}); 
-					})(callback);
-				}, 0, callback);
-				break;
-		}
-	});
+						});
+					}
+					break;
+				default:
+					$('body > div.container').append('<p>' + DIALOG_MODEM_SEARCH + '</p>');
+					setTimeout(function(callback) {
+						(function whileFunc(callback) {
+							wmi.Query({
+								class: 'Win32_PnPEntity',
+								where: 'ClassGuid="{4d36e978-e325-11ce-bfc1-08002be10318}" and PNPDeviceID like "%VID_12D1&PID_1443%"'
+							}, function(err, result) {
+								if(result) if(result[0]) if(result[0].Name) dload_port = $(/.* \((COM\d*)\)/.exec(result[0].Name))[1];
+								else dload_port = '';
+								if(!dload_port) dload_port = '';
+								if(dload_port) {
+									dload_port_number = $(/COM(\d*)/.exec(dload_port))[1];
+									if(!dload_port_number) dload_port_number = '';
+									_updateLog('info', 'Boot port: ' + dload_port);
+									$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
+									$('body > div.container').append('<br>');
+									_updateLog('success', 'detect_dload');
+									if(typeof(callback) == 'function') callback();
+								} else {
+									dload_port_number = '';
+									setTimeout(whileFunc, 0, callback);
+								}
+							}); 
+						})(callback);
+					}, 0, callback);
+					break;
+			}
+		});
+	}, 0);
 }
 
 function factory(callback) {
@@ -803,10 +806,12 @@ function unknown_model() {
 function _end() {
 	$('body > div.container').append('<br>');
 	$('body > div.container').append('<p>' + DIALOG_END + '</p>');
-	$(document).on('keydown', function(e) {
-		$(document).off('keydown');
-		main();
-	});
+	setTimeout(function() {
+		$(document).on('keydown', function(e) {
+			$(document).off('keydown');
+			main();
+		});
+	}, 0);
 }
 
 function start() {
