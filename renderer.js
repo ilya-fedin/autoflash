@@ -536,7 +536,7 @@ function _flash_health(flash_model, flash_special, callback) {
 			$(balong_flash_html).html($(balong_flash_html).html().replace(/\r\n/g, '\n').replace(/.*\r/g, ''));
 		});
 		balong_flash.on('close', function(code) {
-			if(data == 0) {
+			if(code == 0) {
 				$('body > div.container').append('<p>' + DIALOG_SUCCESS + '!</p>');
 				$('body > div.container').append('<br>');
 				_updateLog('success', 'flash_health ' + flash_model + ' ' + flash_special);
