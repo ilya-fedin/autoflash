@@ -117,6 +117,7 @@ detect_flash() {
 detect_dload() {
 	echo "[start] detect_dload" >> "$logfile"
 	echo -n "$DIALOG_SHORT_DLOAD_POINT "
+	ShortBootPoint &
 	cmd /C pause > nul
 	echo
 	echo
