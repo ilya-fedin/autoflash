@@ -1,0 +1,231 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="String1" xml:space="preserve">
+    <value>Разбираем модем, и находим под разъемом симкарты набор технологических контактных площадок. Для модема Е3372</value>
+  </data>
+  <data name="String10" xml:space="preserve">
+    <value>Для модема E3372</value>
+  </data>
+  <data name="String11" xml:space="preserve">
+    <value>H</value>
+  </data>
+  <data name="String12" xml:space="preserve">
+    <value>контактные площадки расположены так:</value>
+  </data>
+  <data name="String13" xml:space="preserve">
+    <value>Площадка, обозначенная красным - это контакт аварийной загрузки.</value>
+  </data>
+  <data name="String14" xml:space="preserve">
+    <value>Как замкнуть бутовую точку пина с корпусом модема без разборки модема E3372</value>
+  </data>
+  <data name="String15" xml:space="preserve">
+    <value>h</value>
+  </data>
+  <data name="String16" xml:space="preserve">
+    <value>.</value>
+  </data>
+  <data name="String17" xml:space="preserve">
+    <value>Внимательно смотрим на эту картинку</value>
+  </data>
+  <data name="String18" xml:space="preserve">
+    <value>Вникаем какой пин замыкаете с корпусом (массой) модема и обращаем внимание на то, что чуть и выше и чуть левее находятся контакты для симки</value>
+  </data>
+  <data name="String19" xml:space="preserve">
+    <value>Держа модем в такой же позиции как на картинке снимаете крышку и вынимаете симку</value>
+  </data>
+  <data name="String2" xml:space="preserve">
+    <value>S</value>
+  </data>
+  <data name="String20" xml:space="preserve">
+    <value>И в щелочку, которая как раз чуть правее контактов симки под симкой внимательно смотрим</value>
+  </data>
+  <data name="String21" xml:space="preserve">
+    <value>Как раз и увидите эту точку - она там всего одна виднеется</value>
+  </data>
+  <data name="String22" xml:space="preserve">
+    <value>Тонкая проволочка спокойно заходит в эту щелочку прям в эту точку, а другой конец проволоки на массу модема - например на ЮСБ штекер</value>
+  </data>
+  <data name="String23" xml:space="preserve">
+    <value>А если вооружитесь лупой - то точно не промахнетесь :-)</value>
+  </data>
+  <data name="String24" xml:space="preserve">
+    <value>Как замкнуть бутовую точку пина с корпусом модема без разборки модема E3372</value>
+  </data>
+  <data name="String25" xml:space="preserve">
+    <value>s</value>
+  </data>
+  <data name="String26" xml:space="preserve">
+    <value>.</value>
+  </data>
+  <data name="String27" xml:space="preserve">
+    <value>Имея ясное представление по картинке разобранного модема, где находится бутовый пин, владельцы, которым неприемлема разборка модема ввиду нарушения пломб (гарантия), но сдавать (менять) его не хочется, а хочется все таки восстановить его своими силами, и имеют хорошее зрение и не трясущиеся руки, могут попробовать добраться до этой волшебной точки (бутового пина (контакта)) без разборки модема.</value>
+  </data>
+  <data name="String28" xml:space="preserve">
+    <value>Смотрим еще раз как и где сидит бутовый пин (контакт) для замыкания с корпусом модема в разобранном виде. Обращаю внимание на два контакта обведенные розовой линией - справа от бутового пина</value>
+  </data>
+  <data name="String29" xml:space="preserve">
+    <value>Теперь, держа модем в таком же положении снимаем крышку модема и вынимаем симку и внимательно смотрим, в щелку где была симка, и видим те же самые контакты, которые обведены этой же розовой линией на модеме в разобранном виде. Совершенно очевидно где находится бутовый контакт.</value>
+  </data>
+  <data name="String3" xml:space="preserve">
+    <value>он будет выглядеть так:</value>
+  </data>
+  <data name="String30" xml:space="preserve">
+    <value>Правильно чуть левее от верхнего контакта. При желании используя тонкую проволочку с изоляционной оплеткой и чуть-чуть оголив конец проволочки можно аккуратно ввести под углом в эту щелку, и, не задев соседние пины, попасть именно в бутовый пин.</value>
+  </data>
+  <data name="String31" xml:space="preserve">
+    <value>Выбор:</value>
+  </data>
+  <data name="String32" xml:space="preserve">
+    <value>разбирать</value>
+  </data>
+  <data name="String33" xml:space="preserve">
+    <value>или</value>
+  </data>
+  <data name="String34" xml:space="preserve">
+    <value>НЕ</value>
+  </data>
+  <data name="String35" xml:space="preserve">
+    <value>разбирать</value>
+  </data>
+  <data name="String36" xml:space="preserve">
+    <value>модем всегда остается за владельцем модема.</value>
+  </data>
+  <data name="String4" xml:space="preserve">
+    <value>На этой картинке все известные площадки:</value>
+  </data>
+  <data name="String5" xml:space="preserve">
+    <value>+5V - шина питания, идущая от USB-разъема</value>
+  </data>
+  <data name="String6" xml:space="preserve">
+    <value>GND - земляная шина</value>
+  </data>
+  <data name="String7" xml:space="preserve">
+    <value>Rx - приемник аппаратного консольного порта</value>
+  </data>
+  <data name="String8" xml:space="preserve">
+    <value>Tx - передатчик аппаратного консольного порта</value>
+  </data>
+  <data name="String9" xml:space="preserve">
+    <value>Boot - контакт для перевода модем в режим аварийной загрузки.</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Замыкание контакта аварийной загрузки</value>
+  </data>
+</root>

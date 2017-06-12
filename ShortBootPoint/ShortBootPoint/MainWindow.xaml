@@ -1,0 +1,104 @@
+﻿<Window x:Class="ShortBootPoint.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ShortBootPoint"
+        xmlns:res="clr-namespace:ShortBootPoint.Properties"
+	    Title="{x:Static res:Resources.Title}" Width="1024" Height="600">
+
+    <Grid x:Name="LayoutRoot">
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel HorizontalAlignment="Center">
+                <TextBlock TextWrapping="Wrap">
+					<Run Text="{x:Static res:Resources.String1}"/>
+					<Run Foreground="Red" Text="{x:Static res:Resources.String2}"/>
+					<Run Text="{x:Static res:Resources.String3}"/>
+					<LineBreak/>
+					<InlineUIContainer>
+						<Image Source="8936313.jpg" Width="500"/>
+					</InlineUIContainer>
+					<LineBreak/>
+					<Run Text="{x:Static res:Resources.String4}"/>
+					<LineBreak/>
+					<Run Text="{x:Static res:Resources.String5}"/>
+					<LineBreak/>
+					<Run Text="{x:Static res:Resources.String6}"/>
+					<LineBreak/>
+					<Run Text="{x:Static res:Resources.String7}"/>
+					<LineBreak/>
+					<Run Text="{x:Static res:Resources.String8}"/>
+					<LineBreak/>
+					<Run Text="{x:Static res:Resources.String9}"/>
+					<LineBreak/>
+					<Run Text="{x:Static res:Resources.String10}"/>
+					<Run Foreground="Red" Text="{x:Static res:Resources.String11}"/>
+					<Run Text="{x:Static res:Resources.String12}"/>
+					<LineBreak/>
+					<InlineUIContainer>
+						<Image Source="bootpin-e3372h.jpg" Width="500"/>
+					</InlineUIContainer>
+					<LineBreak/>
+					<Run Text="{x:Static res:Resources.String13}"/>
+                </TextBlock>
+                <Separator/>
+                <TextBlock TextWrapping="Wrap">
+					<Run FontWeight="Bold" Foreground="Blue" Text="{x:Static res:Resources.String14}"/>
+					<Run FontWeight="Bold" Foreground="Red" Text="{x:Static res:Resources.String15}"/>
+					<Run FontWeight="Bold" Foreground="Blue" Text="{x:Static res:Resources.String16}"/>
+					<LineBreak/>
+					<Run Text="{x:Static res:Resources.String17}"/>
+					<LineBreak/>
+					<InlineUIContainer>
+						<Image Source="bootpin-e3372h.jpg" Width="500"/>
+					</InlineUIContainer>
+					<LineBreak/>
+					<Run Text="{x:Static res:Resources.String18}"/>
+					<LineBreak/>
+					<Run Text="{x:Static res:Resources.String19}"/>
+					<LineBreak/>
+					<Run Text="{x:Static res:Resources.String20}"/>
+					<LineBreak/>
+					<Run Text="{x:Static res:Resources.String21}"/>
+					<LineBreak/>
+					<InlineUIContainer>
+						<Image Source="3373H__Boot.jpg" Width="500"/>
+					</InlineUIContainer>
+					<LineBreak/>
+					<Run Text="{x:Static res:Resources.String22}"/>
+					<LineBreak/>
+					<Run Text="{x:Static res:Resources.String23}"/>
+                </TextBlock>
+                <Separator/>
+                <TextBlock TextWrapping="Wrap">
+					<Run FontWeight="Bold" Foreground="Blue" Text="{x:Static res:Resources.String24}"/>
+					<Run FontWeight="Bold" Foreground="Red" Text="{x:Static res:Resources.String25}"/>
+					<Run FontWeight="Bold" Foreground="Blue" Text="{x:Static res:Resources.String26}"/>
+					<LineBreak/>
+					<Run Text="{x:Static res:Resources.String27}"/>
+					<LineBreak/>
+					<Run Text="{x:Static res:Resources.String28}"/>
+					<LineBreak/>
+					<InlineUIContainer>
+						<Image Source="01_3372s__Igla_2cont_01.jpg" Width="500"/>
+					</InlineUIContainer>
+					<LineBreak/>
+					<Run Text="{x:Static res:Resources.String29}"/>
+					<LineBreak/>
+					<InlineUIContainer>
+						<Image Source="01_3372s__Igla_2cont_02.jpg" Width="500"/>
+					</InlineUIContainer>
+					<LineBreak/>
+					<Run Text="{x:Static res:Resources.String30}"/>
+					<LineBreak/>
+					<Run Text="{x:Static res:Resources.String31}"/>
+					<Run FontWeight="Bold" Text="{x:Static res:Resources.String32}"/>
+					<Run Text="{x:Static res:Resources.String33}"/>
+					<Run FontWeight="Bold" Foreground="Red" Text="{x:Static res:Resources.String34}"/>
+					<Run FontWeight="Bold" Text="{x:Static res:Resources.String35}"/>
+					<Run Text="{x:Static res:Resources.String36}"/>
+                </TextBlock>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>
