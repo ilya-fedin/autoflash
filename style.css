@@ -1,0 +1,20 @@
+html, body {
+	-webkit-user-select: none;
+	cursor: default;
+	overflow: hidden;
+}
+
+md-toolbar {
+	-webkit-app-region: drag;
+}
+
+md-toolbar .md-button {
+	-webkit-app-region: no-drag;
+}
+
+#processing {
+	-webkit-user-select: text;
+	cursor: text;
+	height: 83vh;
+	overflow: auto;
+}

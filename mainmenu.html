@@ -1,0 +1,20 @@
+<md-content>
+	<md-card>
+		<md-card-title>
+			<md-card-title-text>
+				<center class="md-headline" localize>Здравствуйте! Добро пожаловать в автоматический прошивальщик E3372, он поможет Вам прошить модем без траты нервов :)</center>
+			</md-card-title-text>
+		</md-card-title>
+		<md-card-content>
+			<center localize>Итак, выберите режим прошивальщика (по умолчанию первый режим):</center>
+		</md-card-content>
+		<md-card-footer>
+			<center>
+				<md-button localize-title="За исключением действий, которые требуют вашего физического вмешательства. Например, замыкание иглы.&#010;Также будут запросы, если не удастся распознать модем автоматически.&#010;Выбирается младший порт, имеющий в названии PC UI Interface." ng-click="modeOne()" localize>Полностью автоматическая прошивка</md-button>
+				<md-button localize-title="Вам придется ввести номера портов вручную, однако в этом режиме можно шить сразу несколько модемов.&#010;Всегда вписывайте номер порта PC UI Interface!" ng-click="modeTwo()" localize>Автоматическая прошивка с указанием порта</md-button>
+				<md-button localize-title="Вы сможете выбрать, какой из методов прошивки использовать.&#010;Автоопределение порта." ng-click="modeThree()" localize>Выбрать метод прошивки (автоопределение порта)</md-button>
+				<md-button localize-title="Вы сможете выбрать, какой из методов прошивки использовать.&#010;С указанием порта." ng-click="modeFour()" localize>Выбрать метод прошивки (с указанием порта)</md-button>
+			</center>
+		</md-card-footer>
+	</md-card>
+</md-content>

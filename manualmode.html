@@ -1,0 +1,30 @@
+<md-content>
+	<md-card>
+		<md-card-title ng-if="!unknownModel">
+			<md-card-title-text>
+				<center class="md-headline" localize>Выбор режима прошивки</center>
+			</md-card-title-text>
+		</md-card-title>
+		<md-card-title ng-if="unknownModel">
+			<md-card-title-text>
+				<center class="md-headline" localize>ВНИМАНИЕ!!! Обнаружена неизвестная модель! Вы уверены, что это E3372?</center>
+			</md-card-title-text>
+		</md-card-title>
+		<md-card-content ng-if="unknownModel">
+			<p><b localize>Модель</b>: {{model}}</p>
+			<p><b localize>Версия прошивки</b>: {{version}}</p>
+			<p localize>Если Вы уверены, что у вас E3372, и все же хотите продолжить, введите код.</p>
+			<p localize>Но лучше обратитесь на 4PDA в тему E3372 с указанием того, что написано в полях Модель и Версия прошивки!</p>
+		</md-card-content>
+		<md-card-footer>
+			<center>
+				<md-button ng-click="e3372h()" localize>Прошить E3372h</md-button>
+				<md-button ng-click="e3372h_dload()" localize>Прошить E3372h через иглу</md-button>
+				<md-button ng-click="e3372s()" localize>Прошить E3372s</md-button>
+				<md-button ng-click="e3372s_old()" localize>Прошить E3372s <2x.300.xx.xx.xx (или прошитый)</md-button>
+				<md-button ng-click="e3372s_dload()" localize>Прошить E3372s через иглу</md-button>
+				<md-button ng-click="main()" localize>Главное меню</md-button>
+			</center>
+		</md-card-footer>
+	</md-card>
+</md-content>

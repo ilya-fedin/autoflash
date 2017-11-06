@@ -11,15 +11,23 @@
   "repository": "https://github.com/ilya-fedin/autoflash",
   "author": "ilya-fedin",
   "devDependencies": {
-    "electron": "~1.6.2",
-    "electron-packager": "^8.7.0",
-    "electron-rebuild": "^1.5.11"
+    "electron": "^1.7.9",
+    "electron-packager": "^9.1.0",
+    "electron-rebuild": "^1.6.0"
   },
   "dependencies": {
-    "bootstrap": "^3.3.7",
-    "bootswatch": "^3.3.7",
-    "iconv-lite": "^0.4.17",
-    "jquery": "^3.2.1",
-    "node-wmi": "0.0.4"
+    "angular": "^1.6.6",
+    "angular-animate": "^1.6.6",
+    "angular-aria": "^1.6.6",
+    "angular-localize": "^2.4.0",
+    "angular-material": "^1.1.5",
+    "angular-messages": "^1.6.6",
+    "angular-route": "^1.6.6",
+    "angular-sanitize": "^1.6.6",
+    "iconv-lite": "^0.4.19",
+    "node-wmi": "0.0.5",
+    "os-locale": "^2.1.0",
+    "serialport": "^6.0.4",
+    "winston": "^3.0.0-rc1"
   }
 }

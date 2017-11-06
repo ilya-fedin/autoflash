@@ -13,7 +13,7 @@ let mainWindow
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 1024, height: 670, resizable: false, fullscreenable: false, autoHideMenuBar: true})
+  mainWindow = new BrowserWindow({width: 1024, height: 670, resizable: false, fullscreenable: false, autoHideMenuBar: true, frame: false})
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -60,6 +60,18 @@ app.on('activate', function () {
 // code. You can also put them in separate files and require them here.
 
 const {ipcMain} = require('electron')
+
+ipcMain.on('minimize', (event, arg) => {
+  BrowserWindow.getFocusedWindow().minimize()
+})
+
+ipcMain.on('maximize', (event, arg) => {
+  BrowserWindow.getFocusedWindow().maximize()
+})
+
+ipcMain.on('close', (event, arg) => {
+  BrowserWindow.getFocusedWindow().close()
+})
 
 ipcMain.on('quit', (event, arg) => {
   app.quit()

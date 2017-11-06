@@ -1,19 +1,48 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="node_modules/bootswatch/yeti/bootstrap.min.css" rel="stylesheet">
-    <style>html {-webkit-user-select: none; overflow: hidden;}</style>
-  </head>
-  <body>
-    <div class="container">
-	</div>
-  </body>
+<html ng-app="autoflash" ng-jq>
+<head>
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="node_modules/angular-material/angular-material.css">
+	<link rel="stylesheet" href="style.css">
+	<title localize>Автоматический прошивальщик для E3372</title>
+</head>
+<body>
 
-  <script>
-    // You can also require other files to run in this process
-    require('./renderer.js')
-  </script>
+	<div ng-controller="MainController" layout="column" layout-fill>
+
+		<md-toolbar md-whiteframe="2">
+
+			<div class="md-toolbar-tools">
+				<h2 flex md-truncate localize>Автоматический прошивальщик для E3372</h2>
+
+				<md-button ng-click="minimize()">
+					<span localize>Свернуть</span>
+				</md-button>
+
+				<md-button ng-click="close()">
+					<span localize>Закрыть</span>
+				</md-button>
+			</div>
+
+		</md-toolbar>
+
+		<div ng-view></div>
+	
+	</div>
+
+	<script src="node_modules/angular/angular.js"></script>
+	<script src="node_modules/angular-route/angular-route.js"></script>
+	<script src="node_modules/angular-sanitize/angular-sanitize.js"></script>
+	<script src="node_modules/angular-localize/angular-localize.js"></script>
+	<script src="node_modules/angular-aria/angular-aria.js"></script>
+	<script src="node_modules/angular-animate/angular-animate.js"></script>
+	<script src="node_modules/angular-material/angular-material.js"></script>
+	<script src="renderer.js"></script>
+	<script src="detect.js"></script>
+	<script src="flash.js"></script>
+	<script src="mainmenu.js"></script>
+	<script src="manualmode.js"></script>
+	<script src="processing.js"></script>
+ 
+</body>
 </html>
