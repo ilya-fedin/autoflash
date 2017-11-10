@@ -27,6 +27,7 @@
     "iconv-lite": "^0.4.19",
     "node-wmi": "0.0.5",
     "os-locale": "^2.1.0",
+    "roboto-fontface": "^0.8.0",
     "serialport": "^6.0.4",
     "winston": "^3.0.0-rc1"
   }

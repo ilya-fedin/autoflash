@@ -63,7 +63,7 @@ function error_handler(func, args, callback) {
 					}
 				}
 			},
-			templateUrl: 'errorhandlerdialog.html'
+			templateUrl: 'dialogs/errorhandler.html'
 		});
 	}
 }
@@ -297,8 +297,8 @@ app.config(function($routeProvider, $locationProvider, $mdThemingProvider) {
 	}
 
 	switch(osLocale.sync()) {
-		case 'ru_RU': window.i18n = require('./lang.ru.js'); break;
-		default: window.i18n = require('./lang.en.js'); break;
+		case 'ru_RU': window.i18n = require('./langs/ru.js'); break;
+		default: window.i18n = require('./langs/en.js'); break;
 	}
 
 	$mdThemingProvider.theme('default')
@@ -307,22 +307,20 @@ app.config(function($routeProvider, $locationProvider, $mdThemingProvider) {
 
 	$routeProvider
 		.when('/MainMenu', {
-			templateUrl: 'mainmenu.html',
+			templateUrl: 'pages/mainmenu.html',
 			controller: 'MainMenuController'
 		})
 		.when('/ManualMode', {
-			templateUrl: 'manualmode.html',
+			templateUrl: 'pages/manualmode.html',
 			controller: 'ManualModeController'
 		})
 		.when('/Processing', {
-			templateUrl: 'processing.html',
+			templateUrl: 'pages/processing.html',
 			controller: 'ProcessingController'
 		});
 });
 
-app.run(function() {
-	main();
-});
+app.run(main);
 
 app.controller('MainController', function($scope) {
 	$scope.minimize = function() {

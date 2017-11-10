@@ -13,8 +13,10 @@ class Detect {
 					if(flash_port_number) flash_port_number = flash_port_number[1];
 					else flash_port_number = '';
 					logger.info('Download port: ' + flash_port);
-					processing.append('<p>' + localize('УСПЕХ') + '!</p>');
-					processing.append('<br>');
+					if(mode != 'port') {
+						processing.append('<p>' + localize('УСПЕХ') + '!</p>');
+						processing.append('<br>');
+					}
 					logger.debug('detect_flash - success');
 					if(typeof(callback) == 'function') callback();
 					break;
@@ -23,8 +25,10 @@ class Detect {
 					if(dload_port_number) dload_port_number = dload_port_number[1];
 					else dload_port_number = '';
 					logger.info('Boot port: ' + dload_port);
-					processing.append('<p>' + localize('УСПЕХ') + '!</p>');
-					processing.append('<br>');
+					if(mode != 'port') {
+						processing.append('<p>' + localize('УСПЕХ') + '!</p>');
+						processing.append('<br>');
+					}
 					logger.debug('detect_dload - success');
 					if(typeof(callback) == 'function') callback();
 					break;
@@ -49,8 +53,10 @@ class Detect {
 							version = /swver:(.*)/.exec(String(data));
 							if(version) version = version[1];
 							else version = '';
-							processing.append('<p>' + localize('УСПЕХ') + '!</p>');
-							processing.append('<br>');
+							if(mode != 'port') {
+								processing.append('<p>' + localize('УСПЕХ') + '!</p>');
+								processing.append('<br>');
+							}
 							logger.debug('detect - success');
 							if(typeof(callback) == 'function') callback();
 						});
@@ -105,7 +111,7 @@ class Detect {
 									}
 								}
 							},
-							templateUrl: 'portdialog.html'
+							templateUrl: 'dialogs/portchooser.html'
 						});
 					}
 					break;
@@ -173,7 +179,7 @@ class Detect {
 									}
 								}
 							},
-							templateUrl: 'portdialog.html'
+							templateUrl: 'dialogs/portchooser.html'
 						});
 					}
 					break;
@@ -234,7 +240,7 @@ class Detect {
 										}
 									}
 								},
-									templateUrl: 'portdialog.html'
+									templateUrl: 'dialogs/portchooser.html'
 								});
 							}
 							break;
