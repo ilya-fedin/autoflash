@@ -2,7 +2,7 @@
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
 
-var {ipcRenderer} = require('electron');
+var {BrowserWindow} = require('electron').remote;
 var remote = require('electron').remote;
 var os = require('os');
 var fs = require('fs');
@@ -324,10 +324,10 @@ app.run(main);
 
 app.controller('MainController', function($scope) {
 	$scope.minimize = function() {
-		ipcRenderer.send('minimize');
+		BrowserWindow.getFocusedWindow().minimize();
 	}
 
 	$scope.close = function() {
-		ipcRenderer.send('close');
+		BrowserWindow.getFocusedWindow().close();
 	}
 });

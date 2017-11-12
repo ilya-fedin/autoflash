@@ -13,7 +13,7 @@ let mainWindow
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 1024, height: 670, resizable: false, fullscreenable: false, autoHideMenuBar: true, frame: false})
+  mainWindow = new BrowserWindow({width: 1024, height: 600, show: false, resizable: false, fullscreenable: false, autoHideMenuBar: true, frame: false})
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -21,6 +21,10 @@ function createWindow () {
     protocol: 'file:',
     slashes: true
   }))
+
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show()
+  })
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
@@ -58,21 +62,3 @@ app.on('activate', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
-
-const {ipcMain} = require('electron')
-
-ipcMain.on('minimize', (event, arg) => {
-  BrowserWindow.getFocusedWindow().minimize()
-})
-
-ipcMain.on('maximize', (event, arg) => {
-  BrowserWindow.getFocusedWindow().maximize()
-})
-
-ipcMain.on('close', (event, arg) => {
-  BrowserWindow.getFocusedWindow().close()
-})
-
-ipcMain.on('quit', (event, arg) => {
-  app.quit()
-})

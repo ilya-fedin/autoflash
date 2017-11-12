@@ -15,6 +15,6 @@ md-toolbar .md-button {
 #processing {
 	-webkit-user-select: text;
 	cursor: text;
-	height: 83vh;
+	height: 80vh;
 	overflow: auto;
 }
